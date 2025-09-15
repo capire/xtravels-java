@@ -1,0 +1,20 @@
+{
+  "name": "travel-processor",
+  "version": "1.0.0",
+  "private": true,
+  "main": "webapp/index.html",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "deploy-config": "npx -p @sap/ux-ui5-tooling fiori add deploy-config cf"
+  },
+  "keywords": [
+    "ui5",
+    "openui5",
+    "sapui5"
+  ],
+  "devDependencies": {
+    "@sap/ux-ui5-tooling": "1"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "@capire/xtravels-java",
+  "version": "1.0.0",
+  "description": "CAP Java SFlight travel service demo",
+  "scripts": {
+    "lint": "npx eslint ."
+  },
+  "dependencies": {
+    "@capire/common": "*"
+  },
+  "devDependencies": {
+    "@sap/cds-dk": "^9"
+  },
+  "license": "Apache-2.0"
+}
