@@ -24,8 +24,15 @@ jobs:
       with:
         java-version: 21
         distribution: 'sapmachine'
-        server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
-        settings-path: ${{ github.workspace }} # location for the settings.xml file
+        cache: maven
+    - name: Set up Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22
+        registry-url: https://npm.pkg.github.com/
 
     - name: Build with Maven
       run: mvn -ntp -B package
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
