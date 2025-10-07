@@ -80,7 +80,7 @@
 			<!-- JAVA VERSION -->
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.14.0</version>
+				<version>3.14.1</version>
 				<configuration>
 					<release>${jdk.version}</release>
 					<encoding>UTF-8</encoding>
@@ -100,14 +100,14 @@
 			<!-- SUREFIRE VERSION -->
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.5.3</version>
+				<version>3.5.4</version>
 			</plugin>
 
 			<!-- POM FLATTENING FOR CI FRIENDLY VERSIONS -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>flatten-maven-plugin</artifactId>
-				<version>1.7.2</version>
+				<version>1.7.3</version>
 				<configuration>
 					<updatePomFile>true</updatePomFile>
 					<flattenMode>resolveCiFriendliesOnly</flattenMode>
@@ -133,7 +133,7 @@
 			<!-- PROJECT STRUCTURE CHECKS -->
 			<plugin>
 				<artifactId>maven-enforcer-plugin</artifactId>
-				<version>3.6.1</version>
+				<version>3.6.2</version>
 				<executions>
 					<execution>
 						<id>Project Structure Checks</id>
