@@ -6,11 +6,11 @@ A travel booking application built with CAP Java using master data provided by [
 
 ```sh
 git clone https://github.com/capire/xtravels-java
-cd xtravels
-npm install
+cd xtravels-java
+mvn package
 ```
 
-The package has dependencies to other `@capire` packages, including [_`@capire/xflights-data`_](https://github.com/capire/xflights-java/pkgs/npm/xflights-data), that can be pulled from [GitHub Packages](#using-github-packages) or from a [local workspace setup](#using-workspaces) as follows...
+The package has dependencies to other `capire` packages, including [_`sap.capire/xflights-data`_](https://github.com/capire/xflights-java/packages/2693214), that can be pulled from [GitHub Packages](#using-github-packages) or from a [local workspace setup](#using-workspaces) as follows...
 
 ### Using GitHub Packages
 
