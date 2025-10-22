@@ -95,7 +95,12 @@ The dependencies to the [xflights](https://github.com/capire/xflights-java) appl
 
 You can also connect the `xtravels` application to a locally running [xflights](https://github.com/capire/xflights-java) application.
 
-Start the `xflights` application first, then start the `xtravels` application with Spring Boot profile `hybrid`.
+Start the `xflights` application first, then start the `xtravels` application with the Spring Boot profiles `default` and `hybrid`.
+
+E.g. on the command line run:
+```sh
+mvn spring-boot:run -Dspring-boot.run.profiles=default,hybrid
+```
 
 ## License
 
