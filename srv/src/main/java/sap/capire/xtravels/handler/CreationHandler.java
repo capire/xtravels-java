@@ -30,7 +30,11 @@ class CreationHandler implements EventHandler {
   // but on CREATE only, as multiple users could create new Travels concurrently.
   @Before(event = EVENT_CREATE)
   void calculateTravelId(final Travels travel) {
-    var result = service.run(Select.from(TRAVELS).columns(t -> t.ID().max().as("maxID")));
+    var result =
+        service.run(
+            Select.from(TRAVELS)
+                .where(t -> t.IsActiveEntity().eq(true))
+                .columns(t -> t.ID().max().as("maxID")));
     int maxId = (int) result.single().get("maxID");
     travel.setId(++maxId);
   }
@@ -39,7 +43,12 @@ class CreationHandler implements EventHandler {
   @Before(event = EVENT_DRAFT_NEW)
   void calculateBookingPos(Bookings_ ref, final Bookings booking) {
     var result = service.run(Select.from(ref).columns(t -> t.Pos().max().as("maxPos")));
-    var maxPos = (int) result.single().get("maxPos");
-    booking.setPos(++maxPos);
+    var maxPos = result.single().get("maxPos");
+    if (maxPos == null) {
+      booking.setPos(1);
+    } else {
+      int pos = (int) maxPos;
+      booking.setPos(++pos);
+    }
   }
 }
