@@ -1,7 +1,6 @@
 package sap.capire.xtravels.handler;
 
 import static cds.gen.travelservice.TravelService_.TRAVELS;
-import static com.sap.cds.ql.CQL.func;
 
 import cds.gen.travelservice.Bookings;
 import cds.gen.travelservice.Bookings_;
@@ -13,15 +12,17 @@ import com.sap.cds.CdsData;
 import com.sap.cds.ql.CQL;
 import com.sap.cds.ql.Select;
 import com.sap.cds.ql.Update;
+import com.sap.cds.ql.Value;
+import com.sap.cds.ql.cqn.CqnSelectListValue;
 import com.sap.cds.ql.cqn.CqnStructuredTypeRef;
 import com.sap.cds.ql.cqn.CqnValue;
-import com.sap.cds.services.EventContext;
 import com.sap.cds.services.draft.DraftCancelEventContext;
 import com.sap.cds.services.draft.DraftPatchEventContext;
 import com.sap.cds.services.handler.EventHandler;
 import com.sap.cds.services.handler.annotations.After;
 import com.sap.cds.services.handler.annotations.ServiceName;
 import java.math.BigDecimal;
+import java.util.function.Function;
 import org.springframework.stereotype.Component;
 
 // Update a Travel's TotalPrice whenever its BookingFee is modified,
@@ -43,38 +44,30 @@ class RecalculatePriceHandler implements EventHandler {
     if (!(data.containsKey(Travels.BOOKING_FEE)
         || data.containsKey(Bookings.FLIGHT_PRICE)
         || data.containsKey(Bookings.Supplements.PRICE))) return;
-    updateTotals(ref, context);
+    updateTotals(ref);
   }
 
   @After(entity = {Bookings_.CDS_NAME, Bookings_.Supplements_.CDS_NAME})
   void updateTotalsOnDelete(CqnStructuredTypeRef ref, DraftCancelEventContext context) {
-    updateTotals(ref, context);
+    updateTotals(ref);
   }
 
-  private void updateTotals(CqnStructuredTypeRef ref, EventContext context) {
+  private void updateTotals(CqnStructuredTypeRef ref) {
     var travel = CQL.entity(TRAVELS, CQL.to(ref.rootSegment()));
 
-    CqnValue zero = CQL.constant(0);
-    var fee =
-        service.run(
-            Select.from(travel)
-                .columns(t -> func("coalesce", t.BookingFee(), zero).as(Travels.BOOKING_FEE)));
-    var bookings =
-        service.run(
-            Select.from(travel.Bookings())
-                .columns(
-                    b -> func("coalesce", b.FlightPrice().sum(), zero).as(Bookings.FLIGHT_PRICE)));
-    var supplements =
-        service.run(
-            Select.from(travel.Bookings().Supplements())
-                .columns(
-                    s -> func("coalesce", s.Price().sum(), zero).as(Bookings.Supplements.PRICE)));
-    BigDecimal totalPrice =
-        fee.single()
-            .getBookingFee()
-            .add(bookings.single().getFlightPrice())
-            .add(supplements.single().getPrice());
+    Function<Bookings_, CqnValue> bookingCost =
+        b -> orZero(b.FlightPrice()).plus(orZero(b.Supplements().sum(s -> s.Price())));
+    Function<Travels_, CqnSelectListValue> travelCost =
+        t -> t.BookingFee().plus(orZero(t.Bookings().sum(bookingCost))).as(Travels.TOTAL_PRICE);
+
+    var aggregation = Select.from(travel).columns(travelCost);
+    BigDecimal totalPrice = service.run(aggregation).single().getTotalPrice();
+
     service.run(
         Update.entity(travel).data(Travels.TOTAL_PRICE, totalPrice).hint("@readonly", false));
+  }
+
+  private Value<Number> orZero(Value<? extends Number> value) {
+    return CQL.func("coalesce", value, CQL.constant(0));
   }
 }
