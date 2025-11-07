@@ -12,17 +12,15 @@ import com.sap.cds.CdsData;
 import com.sap.cds.ql.CQL;
 import com.sap.cds.ql.Select;
 import com.sap.cds.ql.Update;
-import com.sap.cds.ql.cqn.CqnSelect;
 import com.sap.cds.ql.cqn.CqnStructuredTypeRef;
 import com.sap.cds.services.draft.DraftCancelEventContext;
 import com.sap.cds.services.draft.DraftPatchEventContext;
 import com.sap.cds.services.handler.EventHandler;
 import com.sap.cds.services.handler.annotations.After;
 import com.sap.cds.services.handler.annotations.ServiceName;
-import org.springframework.stereotype.Component;
-
 import java.math.BigDecimal;
 import java.util.Objects;
+import org.springframework.stereotype.Component;
 
 // Update a Travel's TotalPrice whenever its BookingFee is modified,
 // or when a nested Booking is deleted or its FlightPrice is modified,
@@ -54,13 +52,17 @@ class RecalculatePriceHandler implements EventHandler {
   private void updateTotals(CqnStructuredTypeRef ref) {
     var travel = CQL.entity(TRAVELS, CQL.to(ref.rootSegment()));
 
-    CqnSelect aggregation = Select.from(travel).columns(
-              t -> t.BookingFee()
-                      .plus(t.Bookings().sum(
-                              b -> b.FlightPrice().plus(b.Supplements().sum(s -> s.Price()))
-                      ))
-              .as("total"));
-    BigDecimal totalPrice = (BigDecimal) service.run(aggregation).single().get("total");
+    var aggregation =
+        Select.from(travel)
+            .columns(
+                t ->
+                    t.BookingFee()
+                        .plus(
+                            t.Bookings()
+                                .sum(
+                                    b -> b.FlightPrice().plus(b.Supplements().sum(s -> s.Price()))))
+                        .as(Travels.TOTAL_PRICE));
+    BigDecimal totalPrice = service.run(aggregation).single().getTotalPrice();
     totalPrice = Objects.requireNonNullElse(totalPrice, BigDecimal.ZERO);
 
     service.run(
