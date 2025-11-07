@@ -12,14 +12,17 @@ import com.sap.cds.CdsData;
 import com.sap.cds.ql.CQL;
 import com.sap.cds.ql.Select;
 import com.sap.cds.ql.Update;
+import com.sap.cds.ql.Value;
+import com.sap.cds.ql.cqn.CqnSelectListValue;
 import com.sap.cds.ql.cqn.CqnStructuredTypeRef;
+import com.sap.cds.ql.cqn.CqnValue;
 import com.sap.cds.services.draft.DraftCancelEventContext;
 import com.sap.cds.services.draft.DraftPatchEventContext;
 import com.sap.cds.services.handler.EventHandler;
 import com.sap.cds.services.handler.annotations.After;
 import com.sap.cds.services.handler.annotations.ServiceName;
 import java.math.BigDecimal;
-import java.util.Objects;
+import java.util.function.Function;
 import org.springframework.stereotype.Component;
 
 // Update a Travel's TotalPrice whenever its BookingFee is modified,
@@ -52,20 +55,19 @@ class RecalculatePriceHandler implements EventHandler {
   private void updateTotals(CqnStructuredTypeRef ref) {
     var travel = CQL.entity(TRAVELS, CQL.to(ref.rootSegment()));
 
-    var aggregation =
-        Select.from(travel)
-            .columns(
-                t ->
-                    t.BookingFee()
-                        .plus(
-                            t.Bookings()
-                                .sum(
-                                    b -> b.FlightPrice().plus(b.Supplements().sum(s -> s.Price()))))
-                        .as(Travels.TOTAL_PRICE));
+    Function<Bookings_, CqnValue> bookingCost =
+        b -> b.FlightPrice().plus(orZero(b.Supplements().sum(s -> s.Price())));
+    Function<Travels_, CqnSelectListValue> travelCost =
+        t -> t.BookingFee().plus(orZero(t.Bookings().sum(bookingCost))).as(Travels.TOTAL_PRICE);
+
+    var aggregation = Select.from(travel).columns(travelCost);
     BigDecimal totalPrice = service.run(aggregation).single().getTotalPrice();
-    totalPrice = Objects.requireNonNullElse(totalPrice, BigDecimal.ZERO);
 
     service.run(
         Update.entity(travel).data(Travels.TOTAL_PRICE, totalPrice).hint("@readonly", false));
+  }
+
+  private Value<Number> orZero(CqnValue value) {
+    return CQL.func("coalesce", value, CQL.constant(0));
   }
 }
