@@ -56,7 +56,7 @@ class RecalculatePriceHandler implements EventHandler {
     var travel = CQL.entity(TRAVELS, CQL.to(ref.rootSegment()));
 
     Function<Bookings_, CqnValue> bookingCost =
-        b -> b.FlightPrice().plus(orZero(b.Supplements().sum(s -> s.Price())));
+        b -> orZero(b.FlightPrice()).plus(orZero(b.Supplements().sum(s -> s.Price())));
     Function<Travels_, CqnSelectListValue> travelCost =
         t -> t.BookingFee().plus(orZero(t.Bookings().sum(bookingCost))).as(Travels.TOTAL_PRICE);
 
