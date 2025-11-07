@@ -16,6 +16,7 @@ default-env.json
 
 **/node/
 **/node_modules/
+**/package-lock.json
 
 **/.mta/
 *.mtar

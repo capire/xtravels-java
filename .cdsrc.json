@@ -1,5 +1,8 @@
 {
   "features": {
     "compile_for_flows": true
+  },
+  "requires": {
+    "db": "hana"
   }
 }
