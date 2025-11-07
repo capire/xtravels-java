@@ -67,7 +67,7 @@ class RecalculatePriceHandler implements EventHandler {
         Update.entity(travel).data(Travels.TOTAL_PRICE, totalPrice).hint("@readonly", false));
   }
 
-  private Value<Number> orZero(CqnValue value) {
+  private Value<Number> orZero(Value<? extends Number> value) {
     return CQL.func("coalesce", value, CQL.constant(0));
   }
 }
