@@ -7,10 +7,11 @@ cds:
   data-source.csv.paths:
   - "db/data/**"
   - "../db/data/**"
-  - "srv/target/cds/**"
   - "target/cds/**"
-  -  "node_modules/@capire/**"
-  -  "../node_modules/@capire/**"
+  - "../target/cds/**"
+  - "node_modules/@capire/**"
+  - "../node_modules/@capire/**"
+  - "../../node_modules/@capire/**"
 ---
 spring:
   config.activate.on-profile: hybrid
