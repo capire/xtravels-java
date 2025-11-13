@@ -1,0 +1,24 @@
+{
+ "welcomeFile": "/travels/webapp/index.html",
+ "authenticationMethod": "route",
+ "routes": [
+  {
+   "source": "^/travels/webapp/(.*)$",
+   "target": "$1",
+   "localDir": "travels/webapp/",
+   "cacheControl": "no-cache, no-store, must-revalidate"
+  },
+  {
+   "source": "^/odata/v4/(.*)$",
+   "target": "/odata/v4/$1",
+   "destination": "srv-api",
+   "csrfProtection": true
+  },
+  {
+   "source": "^/(.*)$",
+   "target": "$1",
+   "destination": "srv-api",
+   "csrfProtection": true
+  }
+ ]
+}

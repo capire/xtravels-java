@@ -60,6 +60,29 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>com.sap.cds</groupId>
+			<artifactId>cds-starter-cloudfoundry</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sap.cloud.security.ams.client</groupId>
+			<artifactId>jakarta-ams</artifactId>
+			<version>${sap.cloud.security.ams.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sap.cloud.security.ams.client</groupId>
+			<artifactId>cap-ams-support</artifactId>
+			<version>${sap.cloud.security.ams.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -131,6 +154,7 @@
 							<commands>
 								<command>build --for java</command>
 								<command>deploy --to h2 --with-mocks --dry --out "${project.basedir}/src/main/resources/schema-h2.sql"</command>
+								<command>build --for ams</command>
 							</commands>
 						</configuration>
 					</execution>
@@ -146,6 +170,26 @@
 							<cqnServiceGetters>true</cqnServiceGetters>
 							<linkedInterfaces>true</linkedInterfaces>
 							<interfacesForAspects>true</interfacesForAspects>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>com.sap.cloud.security.ams.client</groupId>
+				<artifactId>dcl-compiler-plugin</artifactId>
+				<version>${sap.cloud.security.ams.version}</version>
+				<executions>
+					<execution>
+						<id>dcl.compile</id>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+						<configuration>
+							<sourceDirectory>${project.basedir}/src/main/resources/ams</sourceDirectory>
+							<dcn>true</dcn>
+							<dcnParameter>pretty</dcnParameter>
+							<compileTestToDcn>true</compileTestToDcn>
 						</configuration>
 					</execution>
 				</executions>
