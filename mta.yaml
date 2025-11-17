@@ -1,7 +1,7 @@
 _schema-version: 3.3.0
 ID: xtravels
 version: 1.0.0-SNAPSHOT
-description: "A simple CAP project."
+description: "xtravels for CAP Java"
 parameters:
   enable-parallel-deployments: true
 modules:
@@ -112,7 +112,7 @@ resources:
         provided-apis:
           - name: xtravels-ias-api
             description: API exposed by the application
-        display-name: xtravels
+        display-name: xtravels-java
         oauth2-configuration:
           token-policy:
             access-token-format: "jwt"
