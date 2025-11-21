@@ -1,0 +1,130 @@
+_schema-version: 3.3.0
+ID: xtravels
+version: 1.0.0-SNAPSHOT
+description: "xtravels for CAP Java"
+parameters:
+  enable-parallel-deployments: true
+modules:
+  - name: xtravels-srv
+    type: java
+    path: srv
+    parameters:
+      instances: 1
+      buildpack: sap_java_buildpack_jakarta
+      routes:
+        - route: "${default-url}"
+        - route: "${default-host}.cert.${default-domain}"
+    properties:
+      SPRING_PROFILES_ACTIVE: cloud
+      JBP_CONFIG_COMPONENTS: "jres: ['com.sap.xs.java.buildpack.jre.SAPMachineJRE']"
+      JBP_CONFIG_SAP_MACHINE_JRE: '{ version: 21.+ }'
+      AMS_DCL_ROOT: ams/dcl
+    build-parameters:
+      builder: custom
+      commands:
+        - mvn clean package -DskipTests=true --batch-mode
+      build-result: target/*-exec.jar
+    provides:
+      - name: srv-api # required by consumers of CAP services (e.g. approuter)
+        properties:
+          srv-url: ${default-url}
+          srv-cert-url: '${protocol}://${default-host}.cert.${default-domain}'
+    requires:
+      - name: xtravels-ias
+        parameters:
+          config:
+            credential-type: X509_GENERATED
+            app-identifier: srv
+      - name: xtravels-db
+    deployed-after:
+      - xtravels-ams-policies-deployer
+
+  - name: xtravels
+    type: approuter.nodejs
+    path: app
+    requires:
+      - name: xtravels-ias
+        parameters:
+          config:
+            credential-type: X509_GENERATED
+            app-identifier: approuter
+      - name: srv-api
+        group: destinations
+        properties:
+          url: ~{srv-cert-url}
+          forwardAuthCertificates: true
+          forwardAuthToken: true
+          strictSSL: true
+    parameters:
+      keep-existing-routes: true
+      disk-quota: 512M
+      memory: 256M
+    provides:
+      - name: app-api
+        properties:
+          app-protocol: ${protocol}
+          app-uri: ${default-uri}
+          url: ${default-url}
+
+  - name: xtravels-ams-policies-deployer
+    type: javascript.nodejs
+    path: .
+    build-parameters:
+      builder: custom
+      commands:
+        - npx cds build --for ams
+      build-result: srv/src/gen/policies
+    parameters:
+      buildpack: nodejs_buildpack
+      no-route: true
+      no-start: true
+      tasks:
+        - name: deploy-dcl
+          command: npm start
+          memory: 512M
+    requires:
+      - name: xtravels-ias
+        parameters:
+          config:
+            credential-type: X509_GENERATED
+            app-identifier: ams-policy-deployer
+
+  - name: xtravels-db-deployer
+    type: hdb
+    path: db
+    parameters:
+      buildpack: nodejs_buildpack
+    build-parameters:
+      builder: custom
+      commands:
+        - npm run build
+    requires:
+      - name: xtravels-db
+
+resources:
+  - name: xtravels-ias
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: identity
+      service-name: xtravels-ias
+      service-plan: application
+      config:
+        display-name: xtravels-java
+        oauth2-configuration:
+          token-policy:
+            access-token-format: "jwt"
+          redirect-uris:
+            - ~{app-api/app-protocol}://*.~{app-api/app-uri}/login/callback
+            - ~{app-api/app-protocol}://~{app-api/app-uri}/login/callback
+          post-logout-redirect-uris:
+            - ~{app-api/app-protocol}://*.~{app-api/app-uri}/*/logout.html
+        xsuaa-cross-consumption: true
+        authorization:
+          enabled: true
+    requires:
+      - name: app-api
+  - name: xtravels-db
+    type: com.sap.xs.hdi-container
+    parameters:
+      service: hana
+      service-plan: hdi-shared

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -19,9 +19,11 @@
 		<jdk.version>21</jdk.version>
 		<cds.services.version>4.4.2</cds.services.version>
 		<spring.boot.version>3.5.7</spring.boot.version>
+		<sap.cloud.sdk.version>5.23.0</sap.cloud.sdk.version>
 
 		<cds.install-node.downloadUrl>https://nodejs.org/dist/</cds.install-node.downloadUrl>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<sap.cloud.security.ams.version>3.8.0</sap.cloud.security.ams.version>
 	</properties>
 
 	<modules>
@@ -61,6 +63,16 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+
+			<!-- CLOUD SDK -->
+			<dependency>
+            	<groupId>com.sap.cloud.sdk</groupId>
+        	    <artifactId>sdk-modules-bom</artifactId>
+            	<version>${sap.cloud.sdk.version}</version>
+            	<type>pom</type>
+            	<scope>import</scope>
+        	</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 
@@ -148,7 +160,7 @@
 								<requireJavaVersion>
 									<version>${jdk.version}</version>
 								</requireJavaVersion>
-								<reactorModuleConvergence />
+								<reactorModuleConvergence/>
 							</rules>
 							<fail>true</fail>
 						</configuration>
