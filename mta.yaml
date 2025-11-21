@@ -109,9 +109,6 @@ resources:
       service-name: xtravels-ias
       service-plan: application
       config:
-        provided-apis:
-          - name: xtravels-ias-api
-            description: API exposed by the application
         display-name: xtravels-java
         oauth2-configuration:
           token-policy:
