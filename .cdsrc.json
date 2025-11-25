@@ -1,4 +1,5 @@
 {
+  "comment": "will not longer be needed with cds^9.5",
   "features": {
     "compile_for_flows": true
   }
