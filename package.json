@@ -9,7 +9,7 @@
     "@capire/common": "*"
   },
   "devDependencies": {
-    "@sap/cds-dk": "^9",
+    "@sap/cds-dk": "9.5.0-2025112715360091-SNAPSHOT",
     "@sap/cds": "^9",
     "@sap/ams": "^3"
   },
