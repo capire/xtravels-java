@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
 // -> should be automated by Calculated Elements + auto-GROUP BY
 @Component
 @ServiceName(TravelService_.CDS_NAME)
-class RecalculatePriceHandler implements EventHandler {
+class RecalculatePriceHandler {
 
   private final TravelService service;
 
