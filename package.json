@@ -9,7 +9,7 @@
     "@capire/common": "*"
   },
   "devDependencies": {
-    "@sap/cds-dk": "^9"
+    "@sap/cds-dk": "^9.5"
   },
   "license": "Apache-2.0"
 }
