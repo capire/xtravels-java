@@ -9,7 +9,7 @@
     "@capire/common": "*"
   },
   "devDependencies": {
-    "@sap/cds-dk": "^9.5"
+    "@sap/cds-dk": "^9.5",
     "@sap/cds": "^9.5",
     "@sap/ams": "^3"
   },
