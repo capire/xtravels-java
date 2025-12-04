@@ -10,6 +10,8 @@
   },
   "devDependencies": {
     "@sap/cds-dk": "^9.5"
+    "@sap/cds": "^9.5",
+    "@sap/ams": "^3"
   },
   "license": "Apache-2.0"
 }
