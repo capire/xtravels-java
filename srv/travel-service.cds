@@ -9,11 +9,18 @@ using { sap, sap.capire.travels as db } from '../db/schema';
     { grant: ['*'], to: 'admin'}
   ])
   entity Travels as projection on db.Travels actions {
-    @to: #Canceled action rejectTravel();
-    @to: #Accepted action acceptTravel();
+    action rejectTravel();
+    action acceptTravel();
     action deductDiscount( percent: Percentage not null ) returns Travels;
-    action draftEdit(PreserveChanges: Boolean) returns Travels; // define to annotate
   }
+
+  // Define flow for Travels
+  // NOTE: @flow.status on entity-level makes the target element read-only
+  annotate Travels with @flow.status: Status actions {
+    rejectTravel    @from: #Open  @to: #Canceled;
+    acceptTravel    @from: #Open  @to: #Accepted;
+    deductDiscount  @from: #Open;
+  };
 
   // Also expose Flights and Currencies for travel booking UIs and Value Helps
   @readonly entity Flights as projection on db.masterdata.Flights;
