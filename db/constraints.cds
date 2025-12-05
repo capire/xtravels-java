@@ -3,7 +3,7 @@ using { sap.capire.travels as my } from './schema';
 @assert.constraint.beginAfterEnd: {
   condition: (BeginDate <= EndDate),
   message: 'End Date must be after Begin Date.',
-  target: (EndDate)
+  targets: [(EndDate)]
 }
 annotate my.Travels with {
   @mandatory BeginDate;
