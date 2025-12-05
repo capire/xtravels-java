@@ -17,11 +17,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -91,9 +91,26 @@ class TravelServiceIntegrationTest {
 
     @Test
     @WithMockUser("admin")
+    void shouldCreateTravel() throws Exception {
+        Map<String, Object> travelData = createTravelData();
+
+        mockMvc.perform(post(TRAVELS_ENDPOINT)
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(travelData)))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentTypeCompatibleWith("application/json"))
+                .andExpect(jsonPath("$.Description", is(travelData.get("Description"))))
+                .andExpect(jsonPath("$.BeginDate", is(travelData.get("BeginDate"))))
+                .andExpect(jsonPath("$.EndDate", is(travelData.get("EndDate"))))
+                .andExpect(jsonPath("$.BookingFee", is(travelData.get("BookingFee"))))
+                .andExpect(jsonPath("$.Currency_code", is(travelData.get("Currency_code"))))
+                .andExpect(jsonPath("$.ID", notNullValue()));
+    }
+
+    @Test
+    @WithMockUser("admin")
     void shouldCreateAndRetrieveTravelSuccessfully() throws Exception {
-        MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-        
+
         Map<String, Object> travelData = new HashMap<>();
         travelData.put("Description", "Integration Test Travel");
         travelData.put("BeginDate", LocalDate.now().plusDays(10).toString());
@@ -123,8 +140,7 @@ class TravelServiceIntegrationTest {
     @Test
     @WithMockUser("admin")
     void shouldSupportODataFilterQuery() throws Exception {
-        MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-        
+
         mockMvc.perform(get(ODATA_BASE_URL + "/Travels?$filter=Currency_code eq 'EUR'"))
             .andExpect(status().isOk())
             .andExpect(content().contentTypeCompatibleWith("application/json"));
@@ -133,8 +149,7 @@ class TravelServiceIntegrationTest {
     @Test
     @WithMockUser("admin")
     void shouldGetReadOnlyEntitiesSuccessfully() throws Exception {
-        MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-        
+
         // Test Flights entity
         mockMvc.perform(get(ODATA_BASE_URL + "/Flights"))
             .andExpect(status().isOk())
@@ -154,13 +169,13 @@ class TravelServiceIntegrationTest {
     @Test
     @WithMockUser("admin")
     void shouldReturn404ForNonExistentEntity() throws Exception {
-        MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-        
+
         mockMvc.perform(get(ODATA_BASE_URL + "/Travels(ID=9999999,IsActiveEntity=false)"))
             .andExpect(status().isNotFound());
     }
 
     @Test
+    @WithMockUser("admin")
     void shouldReturn400ForInvalidDiscountPercentage() throws Exception {
         // First create a travel
         Map<String, Object> travelData = createTravelData();
@@ -185,14 +200,40 @@ class TravelServiceIntegrationTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    @WithMockUser("admin")
+    void shouldDeleteTravel() throws Exception {
+        // First create a travel
+        Map<String, Object> travelData = createTravelData();
+        String response = mockMvc.perform(post(TRAVELS_ENDPOINT)
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(travelData)))
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        Map<String, Object> createdTravel = objectMapper.readValue(response, Map.class);
+        Integer travelId = (Integer) createdTravel.get("ID");
+
+        // Delete the travel
+        mockMvc.perform(delete(TRAVELS_ENDPOINT + "(" + travelId + ")"))
+                .andExpect(status().isNoContent());
+
+        // Verify it's deleted
+        mockMvc.perform(get(TRAVELS_ENDPOINT + "(" + travelId + ")"))
+                .andExpect(status().isNotFound());
+    }
+
+
+
     private Map<String, Object> createTravelData() {
         Map<String, Object> travelData = new HashMap<>();
         travelData.put("Description", "Test Travel to Paris");
         travelData.put("BeginDate", LocalDate.now().plusDays(30).toString());
         travelData.put("EndDate", LocalDate.now().plusDays(37).toString());
-        travelData.put("BookingFee", 100.0);
+        travelData.put("BookingFee", 100);
         travelData.put("Currency_code", "EUR");
-        travelData.put("Gender", "male");
         return travelData;
     }
 
