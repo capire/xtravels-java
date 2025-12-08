@@ -261,6 +261,30 @@ class TravelServiceIntegrationTest {
     }
 
 
+    @Test
+    @WithMockUser("admin")
+    void shouldExecuteAcceptTravelAction() throws Exception {
+        // First create a travel
+        Map<String, Object> travelData = createUniqueTravelData("shouldExecuteAcceptTravelAction");
+        String response = mockMvc.perform(post(TRAVELS_ENDPOINT)
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(travelData)))
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        Map<String, Object> createdTravel = objectMapper.readValue(response, Map.class);
+        Integer travelId = (Integer) createdTravel.get("ID");
+
+        // Execute acceptTravel action
+        mockMvc.perform(post(TRAVELS_ENDPOINT + "(ID=" + travelId + ",IsActiveEntity=true)/TravelService.acceptTravel")
+                        .contentType("application/json")
+                        .content("{}"))
+                .andExpect(status().is2xxSuccessful());
+    }
+
+
 
     private Map<String, Object> createUniqueTravelData(String testName) {
         synchronized (TravelServiceIntegrationTest.class) {

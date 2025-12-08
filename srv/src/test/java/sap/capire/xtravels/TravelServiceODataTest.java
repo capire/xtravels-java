@@ -76,29 +76,6 @@ class TravelServiceODataTest {
 
 
     // ========== Travel Actions Tests ==========
-
-    @Test
-    void shouldExecuteAcceptTravelAction() throws Exception {
-        // First create a travel
-        Map<String, Object> travelData = createTravelData();
-        String response = mockMvc.perform(post(TRAVELS_ENDPOINT)
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(travelData)))
-            .andExpect(status().isCreated())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-        
-        Map<String, Object> createdTravel = objectMapper.readValue(response, Map.class);
-        Integer travelId = (Integer) createdTravel.get("ID");
-
-        // Execute acceptTravel action
-        mockMvc.perform(post(TRAVELS_ENDPOINT + "(" + travelId + ")/TravelService.acceptTravel")
-                .contentType("application/json")
-                .content("{}"))
-            .andExpect(status().isOk());
-    }
-
     @Test
     void shouldExecuteRejectTravelAction() throws Exception {
         // First create a travel
