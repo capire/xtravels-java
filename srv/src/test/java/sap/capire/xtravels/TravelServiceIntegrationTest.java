@@ -47,7 +47,7 @@ class TravelServiceIntegrationTest {
     private static final String SUPPLEMENTS_ENDPOINT = ODATA_BASE_URL + "/Supplements";
     private static final String CURRENCIES_ENDPOINT = ODATA_BASE_URL + "/Currencies";
 
-    private static int testCounter = 0;
+    private static int testCounter = 0; // for test-data generation
 
     private MockMvc mockMvc;
 
@@ -131,7 +131,7 @@ class TravelServiceIntegrationTest {
         Integer travelId = (Integer) createdTravel.get("ID");
         assertNotNull(travelId);
 
-        mockMvc.perform(get(ODATA_BASE_URL + "/Travels(ID="+travelId+",IsActiveEntity=false)"))
+        mockMvc.perform(get(ODATA_BASE_URL + "/Travels(ID="+travelId+",IsActiveEntity=true)"))
             .andExpect(status().isOk())
             .andExpect(content().contentTypeCompatibleWith("application/json"));
     }
@@ -216,11 +216,11 @@ class TravelServiceIntegrationTest {
         Integer travelId = (Integer) createdTravel.get("ID");
 
         // Delete the travel
-        mockMvc.perform(delete(TRAVELS_ENDPOINT + "(" + travelId + ")"))
+        mockMvc.perform(delete(TRAVELS_ENDPOINT + "(ID=" + travelId + ",IsActiveEntity=true)"))
                 .andExpect(status().isNoContent());
 
         // Verify it's deleted
-        mockMvc.perform(get(TRAVELS_ENDPOINT + "(" + travelId + ")"))
+        mockMvc.perform(get(TRAVELS_ENDPOINT + "(ID=" + travelId + ",IsActiveEntity=true)"))
                 .andExpect(status().isNotFound());
     }
 
@@ -230,13 +230,16 @@ class TravelServiceIntegrationTest {
         synchronized (TravelServiceIntegrationTest.class) {
             testCounter++;
         }
-        
+
         Map<String, Object> travelData = new HashMap<>();
+        travelData.put("IsActiveEntity", true);
         travelData.put("Description", testName + " - Test Travel " + testCounter + " to Paris");
         travelData.put("BeginDate", LocalDate.now().plusDays(30 + testCounter).toString());
         travelData.put("EndDate", LocalDate.now().plusDays(37 + testCounter).toString());
         travelData.put("BookingFee", 100 + testCounter);
         travelData.put("Currency_code", "EUR");
+        travelData.put("Agency_ID", "070001");
+        travelData.put("Customer_ID", "000001");
         return travelData;
     }
 
