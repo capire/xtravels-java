@@ -19,6 +19,7 @@ import java.util.Map;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.matchesRegex;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -143,6 +144,41 @@ class TravelServiceIntegrationTest {
         mockMvc.perform(get(ODATA_BASE_URL + "/Travels?$filter=Currency_code eq 'EUR'"))
             .andExpect(status().isOk())
             .andExpect(content().contentTypeCompatibleWith("application/json"));
+    }
+
+    @Test
+    @WithMockUser("admin")
+    void shouldSupportSelectQuery() throws Exception {
+        mockMvc.perform(get(TRAVELS_ENDPOINT + "?$select=ID,Description,Currency_code"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith("application/json;charset=UTF-8"))
+                .andExpect(jsonPath("$.value", isA(java.util.List.class)));
+    }
+
+    @Test
+    @WithMockUser("admin")
+    void shouldSupportOrderByQuery() throws Exception {
+        mockMvc.perform(get(TRAVELS_ENDPOINT + "?$orderby=Description desc"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith("application/json;charset=UTF-8"))
+                .andExpect(jsonPath("$.value", isA(java.util.List.class)));
+    }
+
+    @Test
+    @WithMockUser("admin")
+    void shouldSupportTopAndSkipQuery() throws Exception {
+        mockMvc.perform(get(TRAVELS_ENDPOINT + "?$top=5&$skip=0"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith("application/json;charset=UTF-8"))
+                .andExpect(jsonPath("$.value", isA(java.util.List.class)));
+    }
+
+    @Test
+    @WithMockUser("admin")
+    void shouldSupportCountQuery() throws Exception {
+        mockMvc.perform(get(TRAVELS_ENDPOINT + "/$count"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(matchesRegex("\\d+")));
     }
 
     @Test

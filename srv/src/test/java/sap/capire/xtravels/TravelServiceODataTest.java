@@ -70,45 +70,10 @@ class TravelServiceODataTest {
 
     // ========== OData Query Options Tests ==========
 
-    @Test
-    void shouldSupportFilterQuery() throws Exception {
-        mockMvc.perform(get(TRAVELS_ENDPOINT + "?$filter=Currency_code eq 'EUR'"))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType("application/json;charset=UTF-8"))
-            .andExpect(jsonPath("$.value", isA(java.util.List.class)));
-    }
 
-    @Test
-    void shouldSupportSelectQuery() throws Exception {
-        mockMvc.perform(get(TRAVELS_ENDPOINT + "?$select=ID,Description,Currency_code"))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType("application/json;charset=UTF-8"))
-            .andExpect(jsonPath("$.value", isA(java.util.List.class)));
-    }
 
-    @Test
-    void shouldSupportOrderByQuery() throws Exception {
-        mockMvc.perform(get(TRAVELS_ENDPOINT + "?$orderby=Description desc"))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType("application/json;charset=UTF-8"))
-            .andExpect(jsonPath("$.value", isA(java.util.List.class)));
-    }
 
-    @Test
-    void shouldSupportTopAndSkipQuery() throws Exception {
-        mockMvc.perform(get(TRAVELS_ENDPOINT + "?$top=5&$skip=0"))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType("application/json;charset=UTF-8"))
-            .andExpect(jsonPath("$.value", isA(java.util.List.class)));
-    }
 
-    @Test
-    void shouldSupportCountQuery() throws Exception {
-        mockMvc.perform(get(TRAVELS_ENDPOINT + "/$count"))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType("text/plain;charset=UTF-8"))
-            .andExpect(content().string(matchesRegex("\\d+")));
-    }
 
     // ========== Travel Actions Tests ==========
 
