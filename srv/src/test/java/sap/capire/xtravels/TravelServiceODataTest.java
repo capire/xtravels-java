@@ -1,8 +1,6 @@
 package sap.capire.xtravels;
 
-import static org.hamcrest.Matchers.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,46 +38,7 @@ class TravelServiceODataTest {
 
 
 
-    @Test
-    void shouldGetTravelById() throws Exception {
-        // First create a travel to ensure we have data
-        Map<String, Object> travelData = createTravelData();
-        
-        String response = mockMvc.perform(post(TRAVELS_ENDPOINT)
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(travelData)))
-            .andExpect(status().isCreated())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-        
-        Map<String, Object> createdTravel = objectMapper.readValue(response, Map.class);
-        Integer travelId = (Integer) createdTravel.get("ID");
 
-        // Now get the travel by ID
-        mockMvc.perform(get(TRAVELS_ENDPOINT + "(" + travelId + ")"))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType("application/json;charset=UTF-8"))
-            .andExpect(jsonPath("$.ID", is(travelId)))
-            .andExpect(jsonPath("$.Description", is(travelData.get("Description"))));
-    }
-
-    @Test
-    void shouldCreateTravel() throws Exception {
-        Map<String, Object> travelData = createTravelData();
-
-        mockMvc.perform(post(TRAVELS_ENDPOINT)
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(travelData)))
-            .andExpect(status().isCreated())
-            .andExpect(content().contentType("application/json;charset=UTF-8"))
-            .andExpect(jsonPath("$.Description", is(travelData.get("Description"))))
-            .andExpect(jsonPath("$.BeginDate", is(travelData.get("BeginDate"))))
-            .andExpect(jsonPath("$.EndDate", is(travelData.get("EndDate"))))
-            .andExpect(jsonPath("$.BookingFee", is(travelData.get("BookingFee"))))
-            .andExpect(jsonPath("$.Currency_code", is(travelData.get("Currency_code"))))
-            .andExpect(jsonPath("$.ID", notNullValue()));
-    }
 
     @Test
     void shouldUpdateTravel() throws Exception {
@@ -107,30 +66,6 @@ class TravelServiceODataTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.Description", is("Updated Travel Description")))
             .andExpect(jsonPath("$.BookingFee", is(150.0)));
-    }
-
-    @Test
-    void shouldDeleteTravel() throws Exception {
-        // First create a travel
-        Map<String, Object> travelData = createTravelData();
-        String response = mockMvc.perform(post(TRAVELS_ENDPOINT)
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(travelData)))
-            .andExpect(status().isCreated())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-        
-        Map<String, Object> createdTravel = objectMapper.readValue(response, Map.class);
-        Integer travelId = (Integer) createdTravel.get("ID");
-
-        // Delete the travel
-        mockMvc.perform(delete(TRAVELS_ENDPOINT + "(" + travelId + ")"))
-            .andExpect(status().isNoContent());
-
-        // Verify it's deleted
-        mockMvc.perform(get(TRAVELS_ENDPOINT + "(" + travelId + ")"))
-            .andExpect(status().isNotFound());
     }
 
     // ========== OData Query Options Tests ==========

@@ -47,13 +47,15 @@ class TravelServiceIntegrationTest {
     private static final String SUPPLEMENTS_ENDPOINT = ODATA_BASE_URL + "/Supplements";
     private static final String CURRENCIES_ENDPOINT = ODATA_BASE_URL + "/Currencies";
 
+    private static int testCounter = 0;
+
+    private MockMvc mockMvc;
+
     @Autowired
     private WebApplicationContext webApplicationContext;
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    private MockMvc mockMvc;
 
     @BeforeEach
     void setUp() {
@@ -92,7 +94,7 @@ class TravelServiceIntegrationTest {
     @Test
     @WithMockUser("admin")
     void shouldCreateTravel() throws Exception {
-        Map<String, Object> travelData = createTravelData();
+        Map<String, Object> travelData = createUniqueTravelData("shouldCreateTravel");
 
         mockMvc.perform(post(TRAVELS_ENDPOINT)
                         .contentType("application/json")
@@ -111,10 +113,7 @@ class TravelServiceIntegrationTest {
     @WithMockUser("admin")
     void shouldCreateAndRetrieveTravelSuccessfully() throws Exception {
 
-        Map<String, Object> travelData = new HashMap<>();
-        travelData.put("Description", "Integration Test Travel");
-        travelData.put("BeginDate", LocalDate.now().plusDays(10).toString());
-        travelData.put("EndDate", LocalDate.now().plusDays(17).toString());
+        Map<String, Object> travelData = createUniqueTravelData("shouldCreateAndRetrieveTravelSuccessfully");
         travelData.put("BookingFee", 200.0);
         travelData.put("Currency_code", "USD");
 
@@ -178,7 +177,7 @@ class TravelServiceIntegrationTest {
     @WithMockUser("admin")
     void shouldReturn400ForInvalidDiscountPercentage() throws Exception {
         // First create a travel
-        Map<String, Object> travelData = createTravelData();
+        Map<String, Object> travelData = createUniqueTravelData("shouldReturn400ForInvalidDiscountPercentage");
         String response = mockMvc.perform(post(TRAVELS_ENDPOINT)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(travelData)))
@@ -204,7 +203,7 @@ class TravelServiceIntegrationTest {
     @WithMockUser("admin")
     void shouldDeleteTravel() throws Exception {
         // First create a travel
-        Map<String, Object> travelData = createTravelData();
+        Map<String, Object> travelData = createUniqueTravelData("shouldDeleteTravel");
         String response = mockMvc.perform(post(TRAVELS_ENDPOINT)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(travelData)))
@@ -227,14 +226,23 @@ class TravelServiceIntegrationTest {
 
 
 
-    private Map<String, Object> createTravelData() {
+    private Map<String, Object> createUniqueTravelData(String testName) {
+        synchronized (TravelServiceIntegrationTest.class) {
+            testCounter++;
+        }
+        
         Map<String, Object> travelData = new HashMap<>();
-        travelData.put("Description", "Test Travel to Paris");
-        travelData.put("BeginDate", LocalDate.now().plusDays(30).toString());
-        travelData.put("EndDate", LocalDate.now().plusDays(37).toString());
-        travelData.put("BookingFee", 100);
+        travelData.put("Description", testName + " - Test Travel " + testCounter + " to Paris");
+        travelData.put("BeginDate", LocalDate.now().plusDays(30 + testCounter).toString());
+        travelData.put("EndDate", LocalDate.now().plusDays(37 + testCounter).toString());
+        travelData.put("BookingFee", 100 + testCounter);
         travelData.put("Currency_code", "EUR");
         return travelData;
+    }
+
+    @Deprecated
+    private Map<String, Object> createTravelData() {
+        return createUniqueTravelData("legacy");
     }
 
 }

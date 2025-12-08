@@ -26,17 +26,21 @@ class CreationHandler implements EventHandler {
   }
 
   // Fill in alternative keys as consecutive numbers for new Travels, Bookings, and Supplements.
-  // Note: For Travels that can't be done at NEW events, that is when drafts are created,
-  // but on CREATE only, as multiple users could create new Travels concurrently.
-  @Before(event = EVENT_CREATE)
+  // Note: We need to handle both draft creation and final creation to avoid unique constraint violations.
+  @Before(event = {EVENT_CREATE, EVENT_DRAFT_NEW})
   void calculateTravelId(final Travels travel) {
-    var result =
-        service.run(
-            Select.from(TRAVELS)
-                .where(t -> t.IsActiveEntity().eq(true))
-                .columns(t -> t.ID().max().as("maxID")));
-    int maxId = (int) result.single().get("maxID");
-    travel.setId(++maxId);
+    // Only set ID if it's not already set (to avoid overwriting existing IDs)
+    if (travel.getId() == null || travel.getId() == 0) {
+      synchronized (this) {
+        var result =
+            service.run(
+                Select.from(TRAVELS)
+                    .columns(t -> t.ID().max().as("maxID")));
+        var maxIdValue = result.single().get("maxID");
+        int maxId = maxIdValue == null ? 0 : (int) maxIdValue;
+        travel.setId(++maxId);
+      }
+    }
   }
 
   // Fill in IDs as sequence numbers -> could be automated by auto-generation
