@@ -242,10 +242,4 @@ class TravelServiceIntegrationTest {
         travelData.put("Customer_ID", "000001");
         return travelData;
     }
-
-    @Deprecated
-    private Map<String, Object> createTravelData() {
-        return createUniqueTravelData("legacy");
-    }
-
 }
