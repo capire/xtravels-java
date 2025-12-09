@@ -229,7 +229,7 @@ class TravelServiceIntegrationTest {
         Map<String, Object> actionParams = new HashMap<>();
         actionParams.put("percent", 150); // Invalid percentage
 
-        mockMvc.perform(post(TRAVELS_ENDPOINT + "(" + travelId + ")/TravelService.deductDiscount")
+        mockMvc.perform(post(TRAVELS_ENDPOINT + "(ID=" + travelId + ",IsActiveEntity=true)/TravelService.deductDiscount")
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(actionParams)))
                 .andExpect(status().isBadRequest());
@@ -282,6 +282,12 @@ class TravelServiceIntegrationTest {
                         .contentType("application/json")
                         .content("{}"))
                 .andExpect(status().is2xxSuccessful());
+
+        // Check if travel status is accepted
+        mockMvc.perform(get(ODATA_BASE_URL + "/Travels(ID="+travelId+",IsActiveEntity=true)"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith("application/json"))
+                .andExpect(jsonPath("$.Status_code").value("A"));
     }
 
 
