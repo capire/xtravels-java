@@ -140,9 +140,10 @@ class TravelServiceIntegrationTest {
     @WithMockUser("admin")
     void shouldSupportODataFilterQuery() throws Exception {
 
-        mockMvc.perform(get(ODATA_BASE_URL + "/Travels?$filter=Currency_code eq 'EUR'"))
-            .andExpect(status().isOk())
-            .andExpect(content().contentTypeCompatibleWith("application/json"));
+        mockMvc.perform(get(ODATA_BASE_URL + "/Travels?$filter=Currency_code eq 'EUR'&$top=1&$skip=0"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith("application/json"))
+                .andExpect(jsonPath("$.value[0].Currency_code", is("EUR")));
     }
 
     @Test
