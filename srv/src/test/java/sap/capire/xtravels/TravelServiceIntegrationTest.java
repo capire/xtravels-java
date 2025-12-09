@@ -152,7 +152,7 @@ class TravelServiceIntegrationTest {
         mockMvc.perform(get(TRAVELS_ENDPOINT + "?$select=ID,Description,Currency_code"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith("application/json;charset=UTF-8"))
-                .andExpect(jsonPath("$.value", isA(java.util.List.class)));
+                .andExpect(jsonPath("$.value.length()", is(1000)));
     }
 
     @Test
