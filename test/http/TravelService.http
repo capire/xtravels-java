@@ -17,7 +17,7 @@ Authorization: Basic {{username}}:{{password}}
 ### Travels Drafts GET
 # @name Travels_Drafts_GET
 GET http://localhost:8080/odata/v4/travel/Travels(ID=1,IsActiveEntity=true)
-Authorization: Basic YWRtaW46
+Authorization: Basic {{username}}:{{password}}
 
 
 
