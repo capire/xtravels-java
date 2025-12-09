@@ -131,7 +131,9 @@ class TravelServiceIntegrationTest {
 
         mockMvc.perform(get(ODATA_BASE_URL + "/Travels(ID="+travelId+",IsActiveEntity=true)"))
             .andExpect(status().isOk())
-            .andExpect(content().contentTypeCompatibleWith("application/json"));
+            .andExpect(content().contentTypeCompatibleWith("application/json"))
+            .andExpect(jsonPath("$.BookingFee", is(travelData.get("BookingFee"))))
+            .andExpect(jsonPath("$.Currency_code", is(travelData.get("Currency_code"))));
     }
 
     @Test
