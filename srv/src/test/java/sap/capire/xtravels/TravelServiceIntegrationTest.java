@@ -44,9 +44,6 @@ class TravelServiceIntegrationTest {
 
     private static final String ODATA_BASE_URL = "/odata/v4/travel";
     private static final String TRAVELS_ENDPOINT = ODATA_BASE_URL + "/Travels";
-    private static final String FLIGHTS_ENDPOINT = ODATA_BASE_URL + "/Flights";
-    private static final String SUPPLEMENTS_ENDPOINT = ODATA_BASE_URL + "/Supplements";
-    private static final String CURRENCIES_ENDPOINT = ODATA_BASE_URL + "/Currencies";
 
     private static int testCounter = 0; // for test-data generation
 
@@ -95,7 +92,7 @@ class TravelServiceIntegrationTest {
     @Test
     @WithMockUser("admin")
     void shouldCreateTravel() throws Exception {
-        Map<String, Object> travelData = createUniqueTravelData("shouldCreateTravel");
+        Map<String, Object> travelData = createTravelData("shouldCreateTravel");
 
         mockMvc.perform(post(TRAVELS_ENDPOINT)
                         .contentType("application/json")
@@ -114,7 +111,7 @@ class TravelServiceIntegrationTest {
     @WithMockUser("admin")
     void shouldCreateAndRetrieveTravelSuccessfully() throws Exception {
 
-        Map<String, Object> travelData = createUniqueTravelData("shouldCreateAndRetrieveTravelSuccessfully");
+        Map<String, Object> travelData = createTravelData("shouldCreateAndRetrieveTravelSuccessfully");
         travelData.put("BookingFee", 200.0);
         travelData.put("Currency_code", "USD");
 
@@ -213,7 +210,7 @@ class TravelServiceIntegrationTest {
     @WithMockUser("admin")
     void shouldReturn400ForInvalidDiscountPercentage() throws Exception {
         // First create a travel
-        Map<String, Object> travelData = createUniqueTravelData("shouldReturn400ForInvalidDiscountPercentage");
+        Map<String, Object> travelData = createTravelData("shouldReturn400ForInvalidDiscountPercentage");
         String response = mockMvc.perform(post(TRAVELS_ENDPOINT)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(travelData)))
@@ -239,7 +236,7 @@ class TravelServiceIntegrationTest {
     @WithMockUser("admin")
     void shouldDeleteTravel() throws Exception {
         // First create a travel
-        Map<String, Object> travelData = createUniqueTravelData("shouldDeleteTravel");
+        Map<String, Object> travelData = createTravelData("shouldDeleteTravel");
         String response = mockMvc.perform(post(TRAVELS_ENDPOINT)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(travelData)))
@@ -265,7 +262,7 @@ class TravelServiceIntegrationTest {
     @WithMockUser("admin")
     void shouldExecuteAcceptTravelAction() throws Exception {
         // First create a travel
-        Map<String, Object> travelData = createUniqueTravelData("shouldExecuteAcceptTravelAction");
+        Map<String, Object> travelData = createTravelData("shouldExecuteAcceptTravelAction");
         String response = mockMvc.perform(post(TRAVELS_ENDPOINT)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(travelData)))
@@ -290,9 +287,69 @@ class TravelServiceIntegrationTest {
                 .andExpect(jsonPath("$.Status_code").value("A"));
     }
 
+    @Test
+    @WithMockUser("admin")
+    void shouldExecuteRejectTravelAction() throws Exception {
+        // First create a travel
+        Map<String, Object> travelData = createTravelData("shouldExecuteRejectTravelAction");
+        String response = mockMvc.perform(post(TRAVELS_ENDPOINT)
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(travelData)))
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
+        Map<String, Object> createdTravel = objectMapper.readValue(response, Map.class);
+        Integer travelId = (Integer) createdTravel.get("ID");
 
-    private Map<String, Object> createUniqueTravelData(String testName) {
+        // Execute rejectTravel action
+        mockMvc.perform(post(TRAVELS_ENDPOINT + "(ID=" + travelId + ",IsActiveEntity=true)/TravelService.rejectTravel")
+                        .contentType("application/json")
+                        .content("{}"))
+                .andExpect(status().is2xxSuccessful());
+
+        // Check if travel status is rejected
+        mockMvc.perform(get(ODATA_BASE_URL + "/Travels(ID="+travelId+",IsActiveEntity=true)"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith("application/json"))
+                .andExpect(jsonPath("$.Status_code").value("X"));
+    }
+
+    @Test
+    @WithMockUser("admin")
+    void shouldExecuteDeductDiscountAction() throws Exception {
+        // First create a travel
+        Map<String, Object> travelData = createTravelData("shouldExecuteDeductDiscountAction");
+
+        String response = mockMvc.perform(post(TRAVELS_ENDPOINT)
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(travelData)))
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        Map<String, Object> createdTravel = objectMapper.readValue(response, Map.class);
+        Integer travelId = (Integer) createdTravel.get("ID");
+        Integer deduction = 10;
+
+        // Execute deductDiscount action with 10% discount
+        Map<String, Object> actionParams = new HashMap<>();
+        actionParams.put("percent", deduction);
+
+        mockMvc.perform(post(TRAVELS_ENDPOINT + "(ID=" + travelId + ",IsActiveEntity=true)/TravelService.deductDiscount")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(actionParams)))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get(ODATA_BASE_URL + "/Travels(ID="+travelId+",IsActiveEntity=true)"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith("application/json"))
+                .andExpect(jsonPath("$.BookingFee").value(90));
+    }
+
+    private Map<String, Object> createTravelData(String testName) {
         synchronized (TravelServiceIntegrationTest.class) {
             testCounter++;
         }
@@ -302,7 +359,7 @@ class TravelServiceIntegrationTest {
         travelData.put("Description", testName + " - Test Travel " + testCounter + " to Paris");
         travelData.put("BeginDate", LocalDate.now().plusDays(30 + testCounter).toString());
         travelData.put("EndDate", LocalDate.now().plusDays(37 + testCounter).toString());
-        travelData.put("BookingFee", 100 + testCounter);
+        travelData.put("BookingFee", 100);
         travelData.put("Currency_code", "EUR");
         travelData.put("Agency_ID", "070001");
         travelData.put("Customer_ID", "000001");
