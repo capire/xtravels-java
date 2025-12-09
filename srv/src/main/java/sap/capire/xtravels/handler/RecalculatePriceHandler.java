@@ -71,7 +71,7 @@ class RecalculatePriceHandler implements EventHandler {
         Update.entity(travel).data(Travels.TOTAL_PRICE, totalPrice).hint("@readonly", false));
   }
 
-    @After(event = EVENT_CREATE, entity = Travels_.CDS_NAME)
+    @After(event = EVENT_CREATE)
     void setTotalPriceAfterCreation(Travels travels) {
 
         //travel is created with the total price being the booking fee in case no total price is set
