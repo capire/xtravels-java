@@ -1,0 +1,275 @@
+@server=http://localhost:8080
+@username=admin
+@password=
+
+
+### Travels
+# @name Travels_GET
+GET {{server}}/odata/v4/travel/Travels
+Authorization: Basic {{username}}:{{password}}
+
+
+### Travels Drafts GET
+# @name Travels_Drafts_GET
+GET {{server}}/odata/v4/travel/Travels?$filter=(IsActiveEntity eq false)
+Authorization: Basic {{username}}:{{password}}
+
+### Travels Drafts GET
+# @name Travels_Drafts_GET
+GET http://localhost:8080/odata/v4/travel/Travels(ID=1,IsActiveEntity=true)
+Authorization: Basic YWRtaW46
+
+
+
+### Travels Draft POST
+# @name Travels_Draft_POST
+POST {{server}}/odata/v4/travel/Travels
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "Description": "Description-23174596",
+  "BeginDate": "2018-07-31",
+  "EndDate": "2016-08-01",
+  "BookingFee": 90204.5092,
+  "TotalPrice": 81479.652,
+  "Currency": {
+    "code": "890"
+  },
+  "Status": {
+    "code": "A"
+  },
+  "Agency": {
+    "ID": "270904"
+  },
+  "Customer": {
+    "ID": "588238"
+  },
+  "Bookings": [
+    {
+      "Pos": 16001352,
+      "Flight": {
+        "ID": "ts-20071832",
+        "date": "2004-01-03"
+      },
+      "FlightPrice": 69100.9987,
+      "Currency": {
+        "code": "890"
+      },
+      "Supplements": [
+        {
+          "ID": "10036670-2fb0-4a00-89e0-c433979ff5b9",
+          "booked": {
+            "ID": "30007216-09c4-4fe0-8b54-feebc9fd7a0c"
+          },
+          "Price": 63025.421,
+          "Currency": {
+            "code": "890"
+          }
+        },
+        {
+          "ID": "10036681-bc8d-4063-ae7e-2a7e2d222a49",
+          "booked": {
+            "ID": "30007216-09c4-4fe0-8b54-feebc9fd7a0c"
+          },
+          "Price": 50718.3963,
+          "Currency": {
+            "code": "890"
+          }
+        }
+      ],
+      "BookingDate": "2003-08-28"
+    },
+    {
+      "Pos": 16001353,
+      "Flight": {
+        "ID": "ts-20071832",
+        "date": "2004-01-03"
+      },
+      "FlightPrice": 49406.9219,
+      "Currency": {
+        "code": "890"
+      },
+      "Supplements": [
+        {
+          "ID": "18472766-b0be-456b-808f-3525c58cdb7a",
+          "booked": {
+            "ID": "30007216-09c4-4fe0-8b54-feebc9fd7a0c"
+          },
+          "Price": 81274.8795,
+          "Currency": {
+            "code": "890"
+          }
+        },
+        {
+          "ID": "18472767-7033-4186-9ae4-eaa8d3d16780",
+          "booked": {
+            "ID": "30007216-09c4-4fe0-8b54-feebc9fd7a0c"
+          },
+          "Price": 40101.901,
+          "Currency": {
+            "code": "890"
+          }
+        }
+      ],
+      "BookingDate": "2018-04-23"
+    }
+  ],
+  "createdAt": "2012-02-16T23:00:00.000Z",
+  "createdBy": "createdBy.dspms@example.net",
+  "modifiedAt": "2023-12-29T23:00:00.000Z",
+  "modifiedBy": "modifiedBy.dspms@example.org"
+}
+
+
+### Result from POST request above
+@draftID={{Travels_Draft_POST.response.body.$.ID}}
+
+
+### Travels Draft PATCH
+# @name Travels_Draft_Patch
+PATCH {{server}}/odata/v4/travel/Travels(ID={{draftID}},IsActiveEntity=false)
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "Description": "Description-23174596",
+  "BeginDate": "2018-07-31",
+  "EndDate": "2016-08-01",
+  "BookingFee": 90204.5092,
+  "TotalPrice": 81479.652,
+  "Currency": {
+    "code": "890"
+  },
+  "Status": {
+    "code": "A"
+  },
+  "Agency": {
+    "ID": "270904"
+  },
+  "Customer": {
+    "ID": "588238"
+  },
+  "Bookings": [
+    {
+      "Pos": 16001352,
+      "Flight": {
+        "ID": "ts-20071832",
+        "date": "2004-01-03"
+      },
+      "FlightPrice": 69100.9987,
+      "Currency": {
+        "code": "890"
+      },
+      "Supplements": [
+        {
+          "ID": "10036670-2fb0-4a00-89e0-c433979ff5b9",
+          "booked": {
+            "ID": "30007216-09c4-4fe0-8b54-feebc9fd7a0c"
+          },
+          "Price": 63025.421,
+          "Currency": {
+            "code": "890"
+          }
+        },
+        {
+          "ID": "10036681-bc8d-4063-ae7e-2a7e2d222a49",
+          "booked": {
+            "ID": "30007216-09c4-4fe0-8b54-feebc9fd7a0c"
+          },
+          "Price": 50718.3963,
+          "Currency": {
+            "code": "890"
+          }
+        }
+      ],
+      "BookingDate": "2003-08-28"
+    },
+    {
+      "Pos": 16001353,
+      "Flight": {
+        "ID": "ts-20071832",
+        "date": "2004-01-03"
+      },
+      "FlightPrice": 49406.9219,
+      "Currency": {
+        "code": "890"
+      },
+      "Supplements": [
+        {
+          "ID": "18472766-b0be-456b-808f-3525c58cdb7a",
+          "booked": {
+            "ID": "30007216-09c4-4fe0-8b54-feebc9fd7a0c"
+          },
+          "Price": 81274.8795,
+          "Currency": {
+            "code": "890"
+          }
+        },
+        {
+          "ID": "18472767-7033-4186-9ae4-eaa8d3d16780",
+          "booked": {
+            "ID": "30007216-09c4-4fe0-8b54-feebc9fd7a0c"
+          },
+          "Price": 40101.901,
+          "Currency": {
+            "code": "890"
+          }
+        }
+      ],
+      "BookingDate": "2018-04-23"
+    }
+  ],
+  "createdAt": "2012-02-16T23:00:00.000Z",
+  "createdBy": "createdBy.dspms@example.net",
+  "modifiedAt": "2023-12-29T23:00:00.000Z",
+  "modifiedBy": "modifiedBy.dspms@example.org"
+}
+
+
+### Travels Draft Prepare
+# @name Travels_Draft_Prepare
+POST {{server}}/odata/v4/travel/Travels(ID={{draftID}},IsActiveEntity=false)/TravelService.draftPrepare
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{}
+
+
+### Travels Draft Activate
+# @name Travels_Draft_Activate
+POST {{server}}/odata/v4/travel/Travels(ID={{draftID}},IsActiveEntity=false)/TravelService.draftActivate
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{}
+
+
+### Currencies
+# @name Currencies_GET
+GET {{server}}/odata/v4/travel/Currencies
+Authorization: Basic {{username}}:{{password}}
+
+
+### TravelStatus
+# @name TravelStatus_GET
+GET {{server}}/odata/v4/travel/TravelStatus
+Authorization: Basic {{username}}:{{password}}
+
+
+### Flights
+# @name Flights_GET
+GET {{server}}/odata/v4/travel/Flights
+Authorization: Basic {{username}}:{{password}}
+
+
+### Supplements
+# @name Supplements_GET
+GET {{server}}/odata/v4/travel/Supplements
+Authorization: Basic {{username}}:{{password}}
+
+
+### SupplementTypes
+# @name SupplementTypes_GET
+GET {{server}}/odata/v4/travel/SupplementTypes
+Authorization: Basic {{username}}:{{password}}

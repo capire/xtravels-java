@@ -1,0 +1,33 @@
+@server=http://localhost:8080
+@username=admin
+@password=
+
+
+### Flights
+# @name Flights_GET
+GET {{server}}/odata/v4/sap.capire.flights.data/Flights
+Authorization: Basic {{username}}:{{password}}
+
+
+### Airlines
+# @name Airlines_GET
+GET {{server}}/odata/v4/sap.capire.flights.data/Airlines
+Authorization: Basic {{username}}:{{password}}
+
+
+### Airports
+# @name Airports_GET
+GET {{server}}/odata/v4/sap.capire.flights.data/Airports
+Authorization: Basic {{username}}:{{password}}
+
+
+### Supplements
+# @name Supplements_GET
+GET {{server}}/odata/v4/sap.capire.flights.data/Supplements
+Authorization: Basic {{username}}:{{password}}
+
+
+### SupplementTypes
+# @name SupplementTypes_GET
+GET {{server}}/odata/v4/sap.capire.flights.data/SupplementTypes
+Authorization: Basic {{username}}:{{password}}
