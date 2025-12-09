@@ -158,10 +158,13 @@ class TravelServiceIntegrationTest {
     @Test
     @WithMockUser("admin")
     void shouldSupportOrderByQuery() throws Exception {
-        mockMvc.perform(get(TRAVELS_ENDPOINT + "?$orderby=Description desc"))
+
+        mockMvc.perform(get(TRAVELS_ENDPOINT + "?$orderby=Description desc&$top=3&$skip=0"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith("application/json;charset=UTF-8"))
-                .andExpect(jsonPath("$.value", isA(java.util.List.class)));
+                .andExpect(jsonPath("$.value[0].Description", is("Zazzing the Cuba")))
+                .andExpect(jsonPath("$.value[1].Description", is("Watching Walter")))
+                .andExpect(jsonPath("$.value[2].Description", is("Visiting Walter")));
     }
 
     @Test
