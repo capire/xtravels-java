@@ -2,6 +2,13 @@ package sap.capire.xtravels;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.matchesRegex;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,25 +16,19 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebM
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isA;
-import static org.hamcrest.Matchers.matchesRegex;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Integration tests for the CAP Travel Service OData endpoints.
@@ -70,7 +71,6 @@ class TravelServiceIntegrationTest {
     @Test
     @WithMockUser("admin")
     void shouldGetMetadataSuccessfully() throws Exception {
-
         mockMvc.perform(get(ODATA_BASE_URL + "/$metadata"))
             .andExpect(status().isOk())
             .andExpect(content().contentTypeCompatibleWith("application/xml"));
@@ -110,7 +110,6 @@ class TravelServiceIntegrationTest {
     @Test
     @WithMockUser("admin")
     void shouldCreateAndRetrieveTravelSuccessfully() throws Exception {
-
         Map<String, Object> travelData = createTravelData("shouldCreateAndRetrieveTravelSuccessfully");
         travelData.put("BookingFee", 200.0);
         travelData.put("Currency_code", "USD");
@@ -139,61 +138,74 @@ class TravelServiceIntegrationTest {
     @Test
     @WithMockUser("admin")
     void shouldSupportODataFilterQuery() throws Exception {
-
         mockMvc.perform(get(ODATA_BASE_URL + "/Travels?$filter=Currency_code eq 'EUR'&$top=1&$skip=0"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith("application/json"))
-                .andExpect(jsonPath("$.value[0].Currency_code", is("EUR")));
+            .andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith("application/json"))
+            .andExpect(jsonPath("$.value[0].Currency_code", is("EUR")));
     }
 
     @Test
     @WithMockUser("admin")
     void shouldSupportSelectQuery() throws Exception {
         mockMvc.perform(get(TRAVELS_ENDPOINT + "?$select=ID,Description,Currency_code"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith("application/json;charset=UTF-8"))
-                .andExpect(jsonPath("$.value.length()", is(1000)));
+            .andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith("application/json;charset=UTF-8"))
+            .andExpect(jsonPath("$.value.length()", is(1000)))
+            .andExpect(jsonPath("$.value[0].length()", is(5)))
+            .andExpect(jsonPath("$.value[0]", hasKey("ID")))
+            .andExpect(jsonPath("$.value[0]", hasKey("Description")))
+            .andExpect(jsonPath("$.value[0]", hasKey("Currency_code")));
     }
 
     @Test
     @WithMockUser("admin")
     void shouldSupportOrderByQuery() throws Exception {
-
         mockMvc.perform(get(TRAVELS_ENDPOINT + "?$orderby=Currency_code desc&$top=3&$skip=0"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith("application/json;charset=UTF-8"))
-                .andExpect(jsonPath("$.value[0].Currency_code", is("USD")))
-                .andExpect(jsonPath("$.value[1].Currency_code", is("USD")))
-                .andExpect(jsonPath("$.value[2].Currency_code", is("USD")));
+            .andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith("application/json;charset=UTF-8"))
+            .andExpect(jsonPath("$.value[0].Currency_code", is("USD")))
+            .andExpect(jsonPath("$.value[1].Currency_code", is("USD")))
+            .andExpect(jsonPath("$.value[2].Currency_code", is("USD")));
     }
 
     @Test
     @WithMockUser("admin")
     void shouldSupportTopAndSkipQuery() throws Exception {
-        mockMvc.perform(get(TRAVELS_ENDPOINT + "?$top=5&$skip=0"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith("application/json;charset=UTF-8"))
-                .andExpect(jsonPath("$.value", isA(java.util.List.class)));
+        mockMvc.perform(get(TRAVELS_ENDPOINT + "?$top=3&$skip=0"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith("application/json;charset=UTF-8"))
+            .andExpect(jsonPath("$.value", isA(List.class)))
+            .andExpect(jsonPath("$.value.length()", is(3)))
+            .andExpect(jsonPath("$.value[0].ID", is(1)))
+            .andExpect(jsonPath("$.value[1].ID", is(2)))
+            .andExpect(jsonPath("$.value[2].ID", is(3)));
+
+        mockMvc.perform(get(TRAVELS_ENDPOINT + "?$top=2&$skip=1"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith("application/json;charset=UTF-8"))
+            .andExpect(jsonPath("$.value", isA(List.class)))
+            .andExpect(jsonPath("$.value.length()", is(2)))
+            .andExpect(jsonPath("$.value[0].ID", is(2)))
+            .andExpect(jsonPath("$.value[1].ID", is(3)));
     }
 
     @Test
     @WithMockUser("admin")
     void shouldSupportCountQuery() throws Exception {
         mockMvc.perform(get(TRAVELS_ENDPOINT + "/$count"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(matchesRegex("\\d+")));
+            .andExpect(status().isOk())
+            .andExpect(content().string(matchesRegex("\\d+")));
     }
 
     @Test
     @WithMockUser("admin")
     void shouldGetReadOnlyEntitiesSuccessfully() throws Exception {
-
         // Test Flights entity
         mockMvc.perform(get(ODATA_BASE_URL + "/Flights"))
             .andExpect(status().isOk())
             .andExpect(content().contentTypeCompatibleWith("application/json"));
 
-        // Test Supplements entity  
+        // Test Supplements entity
         mockMvc.perform(get(ODATA_BASE_URL + "/Supplements"))
             .andExpect(status().isOk())
             .andExpect(content().contentTypeCompatibleWith("application/json"));
@@ -207,7 +219,6 @@ class TravelServiceIntegrationTest {
     @Test
     @WithMockUser("admin")
     void shouldReturn404ForNonExistentEntity() throws Exception {
-
         mockMvc.perform(get(ODATA_BASE_URL + "/Travels(ID=9999999,IsActiveEntity=false)"))
             .andExpect(status().isNotFound());
     }
