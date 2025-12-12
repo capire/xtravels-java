@@ -79,6 +79,7 @@ using { TravelService } from '../srv/travel-service';
 annotate TravelService.Travels with actions {
   rejectTravel    @title: '{i18n>RejectTravel}';
   acceptTravel    @title: '{i18n>AcceptTravel}';
+  reopenTravel    @title: '{i18n>ReopenTravel}';
   deductDiscount  @title: '{i18n>DeductDiscount}';
 };
 
