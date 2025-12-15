@@ -11,6 +11,6 @@ annotate Travels with @flow.status: (Status) actions {
 // workaround to integrate with draft lifecycle
 extend Travels with actions {
     @from: [#Open, #Accepted]
-    action draftEdit(PreserveChanges: Boolean) returns Travels;
+    action draftEdit(PreserveChanges: Boolean) returns Travels; // define to annotate
 }
 
