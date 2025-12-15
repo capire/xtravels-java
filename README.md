@@ -114,6 +114,10 @@ Alternatively start the application on the command line by executing:
 mvn spring-boot:run -Dspring-boot.run.profiles=default,hybrid
 ```
 
+## Additional Examples
+
+For more (extensive) examples, have a look at the [readme file in the xmpls folder](./xmpls/readme.md).
+
 ## License
 
 Copyright (c) 2025 SAP SE or an SAP affiliate company. All rights reserved. This file is licensed under the Apache Software License, version 2.0 except as noted otherwise in the [LICENSE](LICENSE) file.

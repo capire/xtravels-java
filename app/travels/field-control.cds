@@ -14,15 +14,10 @@ annotate TravelService.Travels with @(Common : {
   EndDate     @readonly: (Status.code = #Accepted) @mandatory: (Status.code != #Accepted);
   Agency      @readonly: (Status.code = #Accepted) @mandatory: (Status.code != #Accepted);
   Customer    @readonly: (Status.code = #Accepted) @mandatory: (Status.code != #Accepted);
-
 } actions {
-  rejectTravel @from: [#Open, #Accepted];
-  acceptTravel @from: [#Open, #Canceled];
   deductDiscount @(
-    from: #Open,
     Common.SideEffects.TargetProperties : ['in/TotalPrice', 'in/BookingFee'],
   );
-  draftEdit @from: [#Open, #Accepted]
 }
 
 annotate TravelService.Travels @Common.SideEffects#ReactonItemCreationOrDeletion : {
