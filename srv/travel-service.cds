@@ -3,7 +3,6 @@ using { sap, sap.capire.travels as db } from '../db/schema';
 @path: 'travel' service TravelService {
 
   entity Travels as projection on db.Travels actions {
-    action createTravelByTemplate() returns Travels;
     action acceptTravel();
     action rejectTravel();
     action reopenTravel();
