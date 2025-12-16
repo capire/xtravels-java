@@ -22,12 +22,9 @@ import com.sap.cds.services.handler.annotations.ServiceName;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Function;
 
 import static cds.gen.travelservice.TravelService_.TRAVELS;
-import static com.sap.cds.services.cds.CqnService.EVENT_CREATE;
 
 // Update a Travel's TotalPrice whenever its BookingFee is modified,
 // or when a nested Booking is deleted or its FlightPrice is modified,
@@ -70,20 +67,6 @@ class RecalculatePriceHandler implements EventHandler {
     service.run(
         Update.entity(travel).data(Travels.TOTAL_PRICE, totalPrice).hint("@readonly", false));
   }
-
-    @After(event = EVENT_CREATE)
-    void setTotalPriceAfterCreation(Travels travels) {
-
-        //travel is created with the total price being the booking fee in case no total price is set
-        if (travels.getTotalPrice() == null || travels.getTotalPrice().equals(BigDecimal.ZERO)) {
-            Map<String, Object> updateData = new HashMap<>();
-            updateData.put(Travels.ID, travels.getId());
-            updateData.put(Travels.TOTAL_PRICE, travels.getBookingFee());
-
-            service.run(
-                    Update.entity(Travels_.class).data(updateData).hint("@readonly", false));
-        }
-    }
 
   private Value<Number> orZero(Value<? extends Number> value) {
     return CQL.func("coalesce", value, CQL.constant(0));
