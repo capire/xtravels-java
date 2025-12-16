@@ -1,5 +1,7 @@
 package sap.capire.xtravels.handler;
 
+import static cds.gen.travelservice.TravelService_.TRAVELS;
+
 import cds.gen.travelservice.Bookings;
 import cds.gen.travelservice.Bookings_;
 import cds.gen.travelservice.TravelService;
@@ -20,11 +22,9 @@ import com.sap.cds.services.handler.EventHandler;
 import com.sap.cds.services.handler.annotations.After;
 import com.sap.cds.services.handler.annotations.ServiceName;
 import org.springframework.stereotype.Component;
-
 import java.math.BigDecimal;
 import java.util.function.Function;
 
-import static cds.gen.travelservice.TravelService_.TRAVELS;
 
 // Update a Travel's TotalPrice whenever its BookingFee is modified,
 // or when a nested Booking is deleted or its FlightPrice is modified,
