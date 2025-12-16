@@ -21,10 +21,9 @@ import com.sap.cds.services.draft.DraftPatchEventContext;
 import com.sap.cds.services.handler.EventHandler;
 import com.sap.cds.services.handler.annotations.After;
 import com.sap.cds.services.handler.annotations.ServiceName;
-import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.function.Function;
-
+import org.springframework.stereotype.Component;
 
 // Update a Travel's TotalPrice whenever its BookingFee is modified,
 // or when a nested Booking is deleted or its FlightPrice is modified,
