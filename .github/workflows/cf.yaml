@@ -24,6 +24,7 @@ concurrency:
 env:
   APP_NAME: xtravels
   NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  FORCE_COLOR: true
 jobs:
   deploy:
     runs-on: ubuntu-latest
