@@ -35,14 +35,17 @@ class DeductDiscountHandler implements EventHandler {
             .getBookingFee()
             .subtract(travel.getBookingFee().multiply(discount))
             .round(new MathContext(3)));
-    travel.setTotalPrice(
-        travel
-            .getTotalPrice()
-            .subtract(travel.getTotalPrice().multiply(discount))
-            .round(new MathContext(3)));
+    BigDecimal totalPrice = travel.getTotalPrice();
+
+    if (totalPrice != null && totalPrice.compareTo(BigDecimal.ZERO) > 0) {
+      travel.setTotalPrice(
+          totalPrice
+              .subtract(totalPrice.multiply(discount))
+              .round(new MathContext(3)));
+    }
 
     Travels update = Travels.create();
-    update.setTotalPrice(travel.getTotalPrice());
+    update.setTotalPrice(totalPrice);
     update.setBookingFee(travel.getBookingFee());
     service.run(Update.entity(ref).data(update).hint("@readonly", false));
 
