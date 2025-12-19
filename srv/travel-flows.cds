@@ -1,8 +1,7 @@
 using { TravelService.Travels } from './travel-service';
 
-// Note: The @flow.status annotation makes that field @readonly by default
-annotate Travels with @flow.status: (Status) actions {
-  deductDiscount  @from: [ #Open ]; // can only be called on #Open travels
+annotate Travels with @flow.status: Status actions {
+  deductDiscount  @from: [ #Open ]; // restricted #Open travels
   acceptTravel    @from: [ #Open ]                @to: #Accepted;
   rejectTravel    @from: [ #Open ]                @to: #Rejected;
   reopenTravel    @from: [ #Rejected, #Accepted ] @to: #Open;
