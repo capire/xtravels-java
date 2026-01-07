@@ -9,13 +9,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import cds.gen.travelservice.Bookings;
 import cds.gen.travelservice.Travels;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sap.cds.CdsData;
+import com.sap.cds.CdsJsonConverter;
+import com.sap.cds.CdsJsonConverter.UnknownPropertyHandling;
+import com.sap.cds.reflect.CdsModel;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Map;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -32,6 +35,16 @@ class TravelServiceIntegrationTest {
   private static final String TRAVELS_ENDPOINT = ODATA_BASE_URL + "/Travels";
 
   @Autowired private MockMvc mockMvc;
+  @Autowired private CdsModel model;
+  private CdsJsonConverter converter;
+
+  @BeforeEach
+  void setup() {
+    converter =
+        CdsJsonConverter.builder(model)
+            .unknownPropertyHandling(UnknownPropertyHandling.IGNORE)
+            .build();
+  }
 
   @Test
   @WithMockUser("admin")
@@ -90,18 +103,57 @@ class TravelServiceIntegrationTest {
             .getContentAsString();
 
     // Verify the created travel can be retrieved
-    ObjectMapper mapper = new ObjectMapper();
-    Map<String, Object> createdTravel =
-        mapper.readValue(response, new TypeReference<Map<String, Object>>() {});
-    Integer travelId = (Integer) createdTravel.get("ID");
-    assertNotNull(travelId);
+    Travels createdTravel = converter.fromJsonObject(response, Travels.class);
+    assertNotNull(createdTravel.getId());
 
     mockMvc
-        .perform(get(TRAVELS_ENDPOINT + "(ID=" + travelId + ",IsActiveEntity=true)"))
+        .perform(get(TRAVELS_ENDPOINT + "(ID=" + createdTravel.getId() + ",IsActiveEntity=true)"))
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith("application/json"))
         .andExpect(jsonPath("$.BookingFee").value(200.0))
         .andExpect(jsonPath("$.Currency_code").value("USD"));
+  }
+
+  @Test
+  @WithMockUser("admin")
+  void shouldCreateAndRetrieveTravelWithBookingsSuccessfully() throws Exception {
+    Travels travel = createTravelData("shouldCreateAndRetrieveTravelWithBookingsSuccessfully");
+    Bookings booking = Bookings.create();
+    booking.setFlightId("GA0322");
+    booking.setFlightDate(LocalDate.of(2024, 6, 2));
+    booking.setFlightPrice(BigDecimal.valueOf(1103));
+    Bookings.Supplements supplement = Bookings.Supplements.create();
+    supplement.setBookedId("bv-0001");
+    supplement.setPrice(new BigDecimal("2.30"));
+    booking.setSupplements(List.of(supplement));
+    travel.setBookings(List.of(booking));
+
+    // Create travel
+    String response =
+        mockMvc
+            .perform(
+                post(TRAVELS_ENDPOINT).contentType("application/json").content(travel.toJson()))
+            .andExpect(status().isCreated())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    // Verify the created travel can be retrieved
+    Travels createdTravel = converter.fromJsonObject(response, Travels.class);
+    assertNotNull(createdTravel.getId());
+
+    // Verify @federated data can be read
+    mockMvc
+        .perform(
+            get(
+                TRAVELS_ENDPOINT
+                    + "(ID="
+                    + createdTravel.getId()
+                    + ",IsActiveEntity=true)?$expand=Bookings($expand=Flight,Supplements($expand=booked))"))
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith("application/json"))
+        .andExpect(jsonPath("$.Bookings[0].Flight.origin").value("Miami International Airport"))
+        .andExpect(jsonPath("$.Bookings[0].Supplements[0].booked.descr").value("Hot Chocolate"));
   }
 
   @Test
@@ -140,10 +192,7 @@ class TravelServiceIntegrationTest {
             .getResponse()
             .getContentAsString();
 
-    ObjectMapper mapper = new ObjectMapper();
-    Map<String, Object> createdTravel =
-        mapper.readValue(response, new TypeReference<Map<String, Object>>() {});
-    Integer travelId = (Integer) createdTravel.get("ID");
+    Travels createdTravel = converter.fromJsonObject(response, Travels.class);
 
     // Try to execute deductDiscount action with invalid percentage (>100)
     CdsData actionParams = CdsData.create();
@@ -153,7 +202,7 @@ class TravelServiceIntegrationTest {
         .perform(
             post(TRAVELS_ENDPOINT
                     + "(ID="
-                    + travelId
+                    + createdTravel.getId()
                     + ",IsActiveEntity=true)/TravelService.deductDiscount")
                 .contentType("application/json")
                 .content(actionParams.toJson()))
@@ -174,17 +223,14 @@ class TravelServiceIntegrationTest {
             .getResponse()
             .getContentAsString();
 
-    ObjectMapper mapper = new ObjectMapper();
-    Map<String, Object> createdTravel =
-        mapper.readValue(response, new TypeReference<Map<String, Object>>() {});
-    Integer travelId = (Integer) createdTravel.get("ID");
+    Travels createdTravel = converter.fromJsonObject(response, Travels.class);
 
     // Execute acceptTravel action
     mockMvc
         .perform(
             post(TRAVELS_ENDPOINT
                     + "(ID="
-                    + travelId
+                    + createdTravel.getId()
                     + ",IsActiveEntity=true)/TravelService.acceptTravel")
                 .contentType("application/json")
                 .content("{}"))
@@ -192,7 +238,7 @@ class TravelServiceIntegrationTest {
 
     // Check if travel status is accepted
     mockMvc
-        .perform(get(TRAVELS_ENDPOINT + "(ID=" + travelId + ",IsActiveEntity=true)"))
+        .perform(get(TRAVELS_ENDPOINT + "(ID=" + createdTravel.getId() + ",IsActiveEntity=true)"))
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith("application/json"))
         .andExpect(jsonPath("$.Status_code").value("A"));
@@ -212,17 +258,14 @@ class TravelServiceIntegrationTest {
             .getResponse()
             .getContentAsString();
 
-    ObjectMapper mapper = new ObjectMapper();
-    Map<String, Object> createdTravel =
-        mapper.readValue(response, new TypeReference<Map<String, Object>>() {});
-    Integer travelId = (Integer) createdTravel.get("ID");
+    Travels createdTravel = converter.fromJsonObject(response, Travels.class);
 
     // Execute rejectTravel action
     mockMvc
         .perform(
             post(TRAVELS_ENDPOINT
                     + "(ID="
-                    + travelId
+                    + createdTravel.getId()
                     + ",IsActiveEntity=true)/TravelService.rejectTravel")
                 .contentType("application/json")
                 .content("{}"))
@@ -230,7 +273,7 @@ class TravelServiceIntegrationTest {
 
     // Check if travel status is rejected
     mockMvc
-        .perform(get(TRAVELS_ENDPOINT + "(ID=" + travelId + ",IsActiveEntity=true)"))
+        .perform(get(TRAVELS_ENDPOINT + "(ID=" + createdTravel.getId() + ",IsActiveEntity=true)"))
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith("application/json"))
         .andExpect(jsonPath("$.Status_code").value("X"));
@@ -251,10 +294,7 @@ class TravelServiceIntegrationTest {
             .getResponse()
             .getContentAsString();
 
-    ObjectMapper mapper = new ObjectMapper();
-    Map<String, Object> createdTravel =
-        mapper.readValue(response, new TypeReference<Map<String, Object>>() {});
-    Integer travelId = (Integer) createdTravel.get("ID");
+    Travels createdTravel = converter.fromJsonObject(response, Travels.class);
 
     // Execute deductDiscount action with 10% discount
     CdsData actionParams = CdsData.create();
@@ -264,14 +304,14 @@ class TravelServiceIntegrationTest {
         .perform(
             post(TRAVELS_ENDPOINT
                     + "(ID="
-                    + travelId
+                    + createdTravel.getId()
                     + ",IsActiveEntity=true)/TravelService.deductDiscount")
                 .contentType("application/json")
                 .content(actionParams.toJson()))
         .andExpect(status().isOk());
 
     mockMvc
-        .perform(get(TRAVELS_ENDPOINT + "(ID=" + travelId + ",IsActiveEntity=true)"))
+        .perform(get(TRAVELS_ENDPOINT + "(ID=" + createdTravel.getId() + ",IsActiveEntity=true)"))
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith("application/json"))
         .andExpect(jsonPath("$.BookingFee").value(90));
@@ -281,8 +321,8 @@ class TravelServiceIntegrationTest {
     Travels travel = Travels.create();
     travel.setIsActiveEntity(true);
     travel.setDescription(testName + " - Test Travel");
-    travel.setBeginDate(LocalDate.now().plusDays(30));
-    travel.setEndDate(LocalDate.now().plusDays(37));
+    travel.setBeginDate(LocalDate.of(2024, 6, 1));
+    travel.setEndDate(LocalDate.of(2024, 6, 14));
     travel.setBookingFee(BigDecimal.valueOf(100));
     travel.setCurrencyCode("EUR");
     travel.setAgencyId("070001");
