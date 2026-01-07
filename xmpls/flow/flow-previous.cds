@@ -11,7 +11,7 @@ extend TravelService.Travels with actions {
 annotate TravelService.Travels with actions {
   reviewTravel   @from: [ #Open ]                           @to: #InReview;
   blockTravel    @from: [ #InReview, #Open ]                @to: #Blocked;
-  reopenTravel   @from: [ #InReview, #Accepted, #Canceled ] @to: #Open;
+  reopenTravel   @from: [ #InReview, #Accepted, #Rejected ] @to: #Open;
   unblockTravel  @from: [ #Blocked ]                        @to: $flow.previous;
   // in the extended flow, accept/reject/deduct only from InReview
   acceptTravel   @from: [ #InReview ];
@@ -21,7 +21,7 @@ annotate TravelService.Travels with actions {
 
 // specify ui labels
 annotate TravelService.Travels with actions {
-  reviewTravel    @title: '{i18n>ReviewTravel}';
-  blockTravel     @title: '{i18n>BlockTravel}';
-  unblockTravel   @title: '{i18n>UnblockTravel}';
+  reviewTravel    @title: '{i18n>Review}';
+  blockTravel     @title: '{i18n>Block}';
+  unblockTravel   @title: '{i18n>Unblock}';
 };
