@@ -120,9 +120,11 @@ class TravelServiceIntegrationTest {
     booking.setFlightId("GA0322");
     booking.setFlightDate(LocalDate.of(2024, 6, 2));
     booking.setFlightPrice(BigDecimal.valueOf(1103));
+    booking.setCurrencyCode("EUR");
     Bookings.Supplements supplement = Bookings.Supplements.create();
     supplement.setBookedId("bv-0001");
     supplement.setPrice(new BigDecimal("2.30"));
+    supplement.setCurrencyCode("EUR");
     booking.setSupplements(List.of(supplement));
     travel.setBookings(List.of(booking));
 

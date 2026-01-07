@@ -7,6 +7,10 @@ annotate TravelService.Travels with {
     when length(Description) < 3 then 'Description too short'
   end);
 
+  Agency @assert: (case
+    when not exists Agency then 'Agency does not exist'
+  end);
+
   Customer @assert: (case
     when Customer is null then 'Customer must be specified'
     when not exists Customer then 'Customer does not exist'
@@ -17,7 +21,7 @@ annotate TravelService.Travels with {
   end);
 
   BookingFee @assert: (case
-    when BookingFee < 0 then 'Booking fee cannot be negative'
+    when BookingFee < 0 then 'ASSERT_BOOKING_FEE_NON_NEGATIVE'
   end);
 
 };
@@ -25,19 +29,19 @@ annotate TravelService.Travels with {
 
 annotate TravelService.Bookings with {
 
+  Flight {
+    date @assert: (case
+      when date not between $self.Travel.BeginDate and $self.Travel.EndDate then 'ASSERT_BOOKINGS_IN_TRAVEL_PERIOD'
+    end);
+  }
+
   FlightPrice @assert: (case
     when FlightPrice < 0 then 'ASSERT_FLIGHT_PRICE_POSITIVE'
   end);
 
   Currency {
     code @assert: (case
-      when $self.Currency.code != $self.Travel.Currency.code then 'ASSERT_BOOKING_CURRENCY_MATCHES_TRAVEL'
-    end);
-  }
-
-  Flight {
-    date @assert: (case
-      when date not between $self.Travel.BeginDate and $self.Travel.EndDate then 'ASSERT_BOOKINGS_IN_TRAVEL_PERIOD'
+      when code != $self.Travel.Currency.code then 'ASSERT_BOOKING_CURRENCY_MATCHES_TRAVEL'
     end);
   }
 
