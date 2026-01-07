@@ -1,0 +1,37 @@
+# This workflow syncs cds and frontend files with the Node.js project
+name: Sync with Node.js
+
+on:
+  workflow_dispatch:
+  # schedule:
+    # - cron: "17 3 * * 3"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Checkout source repo
+        uses: actions/checkout@v6
+        with:
+          repository: capire/xtravels
+          path: tmp/_source
+
+      - name: Copy files from source
+        run: ./.github/workflows/sync.sh
+
+      - name: Create Pull Request if changes exist
+        uses: peter-evans/create-pull-request@v8
+        with:
+          commit-message: "chore(sync): update shared files from `capire/xtravels`"
+          title: "chore(sync): sync shared files"
+          body: |
+            Automated sync of shared files from `capire/xtravels`.
+          branch: "chore/sync-files"
+          delete-branch: true
+          labels: "sync"
