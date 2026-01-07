@@ -1,13 +1,21 @@
 code;locale;name
 O;en;Open
+R;en;In Review
+B;en;Blocked
 A;en;Accepted
-X;en;Canceled
+X;en;Rejected
 O;de;Offen
+R;de;In Überprüfung
+B;de;Gesperrt
 A;de;Genehmigt
 X;de;Abgelehnt
 O;fr;Ouverte
+R;fr;En révision
+B;fr;Bloquée
 A;fr;Acceptée
 X;fr;Rejetée
 O;it;Apri
+R;it;In revisione
+B;it;Bloccata
 A;it;Accettata
 X;it;Rifiutata
