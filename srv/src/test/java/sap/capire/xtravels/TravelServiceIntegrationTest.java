@@ -55,8 +55,6 @@ class TravelServiceIntegrationTest {
         .andExpect(content().contentTypeCompatibleWith("application/xml"));
   }
 
-  // ========== Travels Entity Tests ==========
-
   @Test
   @WithMockUser("admin")
   void shouldGetAllTravels() throws Exception {
