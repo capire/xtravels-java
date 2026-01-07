@@ -42,31 +42,7 @@
       }
     }
   },
-  "sap.ui": {
-    "technology": "UI5",
-    "icons": {
-      "icon": "",
-      "favIcon": "",
-      "phone": "",
-      "phone@2": "",
-      "tablet": "",
-      "tablet@2": ""
-    },
-    "deviceTypes": {
-      "desktop": true,
-      "tablet": true,
-      "phone": true
-    }
-  },
   "sap.ui5": {
-    "dependencies": {
-      "minUI5Version": "1.136.0",
-      "libs": {
-        "sap.m": {},
-        "sap.ui.core": {},
-        "sap.fe.templates": {}
-      }
-    },
     "models": {
       "i18n": {
         "type": "sap.ui.model.resource.ResourceModel",
@@ -116,10 +92,33 @@
           "name": "sap.fe.templates.ListReport",
           "options": {
             "settings": {
-              "contextPath": "/Travels",
+              "entitySet": "Travels",
               "controlConfiguration": {
                 "@com.sap.vocabularies.UI.v1.SelectionFields": {
                   "useSemanticDateRange": true
+                },
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "actions": {
+                    "MenuActions": {
+                      "text": "{i18n>export}",
+                      "menu": [
+                        "exportJSON",
+                        "exportCSV"
+                      ]
+                    },
+                    "exportJSON": {
+                      "press": "sap.capire.travels.ext.CustomActions.exportJSON",
+                      "enabled": true,
+                      "visible": true,
+                      "text": "{i18n>json}"
+                    },
+                    "exportCSV": {
+                      "press": "sap.capire.travels.ext.CustomActions.exportCSV",
+                      "enabled": true,
+                      "visible": true,
+                      "text": "{i18n>csv}"
+                    }
+                  }
                 }
               },
               "variantManagement": "Page",
@@ -140,7 +139,7 @@
           "name": "sap.fe.templates.ObjectPage",
           "options": {
             "settings": {
-              "contextPath": "/Travels",
+              "entitySet": "Travels",
               "navigation": {
                 "Bookings": {
                   "detail": {
@@ -148,7 +147,16 @@
                   }
                 }
               },
-              "editableHeaderContent": false
+              "editableHeaderContent": false,
+              "controlConfiguration": {
+                "Bookings/@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "creationMode": {
+                      "name": "Inline"
+                    }
+                  }
+                }
+              }
             }
           }
         },
@@ -158,7 +166,7 @@
           "name": "sap.fe.templates.ObjectPage",
           "options": {
             "settings": {
-              "contextPath": "/Travels/Bookings",
+              "entitySet": "Bookings",
               "editableHeaderContent": false
             }
           }

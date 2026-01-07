@@ -1,7 +1,17 @@
-using { TravelService } from '../../srv/travel-service';
+using { TravelService, sap.capire.travels.TravelStatus } from '../../srv/travel-service';
 //
 // annotations that control the behavior of fields and actions
 //
+
+extend entity TravelStatus with {
+  fieldControl: Int16 @odata.Type:'Edm.Byte' enum {
+    Inapplicable = 0;
+    ReadOnly = 1;
+    Optional = 3;
+    Mandatory = 7;
+  } = ( code = #Accepted ? #ReadOnly : #Mandatory );
+}
+
 
 annotate TravelService.Travels with @(Common : {
   SideEffects: {
@@ -9,16 +19,16 @@ annotate TravelService.Travels with @(Common : {
     TargetProperties: ['TotalPrice']
   },
 }){
-  BookingFee  @readonly: (Status.code = #Accepted) @mandatory: (Status.code != #Accepted);
-  BeginDate   @readonly: (Status.code = #Accepted) @mandatory: (Status.code != #Accepted);
-  EndDate     @readonly: (Status.code = #Accepted) @mandatory: (Status.code != #Accepted);
-  Agency      @readonly: (Status.code = #Accepted) @mandatory: (Status.code != #Accepted);
-  Customer    @readonly: (Status.code = #Accepted) @mandatory: (Status.code != #Accepted);
+  BookingFee  @Common.FieldControl  : Status.fieldControl;
+  BeginDate   @Common.FieldControl  : Status.fieldControl;
+  EndDate     @Common.FieldControl  : Status.fieldControl;
+  Agency      @Common.FieldControl  : Status.fieldControl;
+  Customer    @Common.FieldControl  : Status.fieldControl;
 } actions {
   deductDiscount @(
     Common.SideEffects.TargetProperties : ['in/TotalPrice', 'in/BookingFee'],
   );
-}
+};
 
 annotate TravelService.Travels @Common.SideEffects#ReactonItemCreationOrDeletion : {
   SourceEntities : [ Bookings ],
@@ -29,9 +39,9 @@ annotate TravelService.Bookings with @UI.CreateHidden : (Travel.Status.code != #
 annotate TravelService.Bookings with @UI.DeleteHidden : (Travel.Status.code != #Open);
 
 annotate TravelService.Bookings {
-  BookingDate   @readonly;
-  Flight        @readonly: (Travel.Status.code = #Accepted) @mandatory: (Travel.Status.code != #Accepted);
-  FlightPrice   @readonly: (Travel.Status.code = #Accepted) @mandatory: (Travel.Status.code != #Accepted);
+  BookingDate   @Core.Computed;
+  Flight        @Common.FieldControl  : Travel.Status.fieldControl;
+  FlightPrice   @Common.FieldControl  : Travel.Status.fieldControl;
 };
 
 annotate TravelService.Bookings with @Capabilities.NavigationRestrictions.RestrictedProperties : [
@@ -48,6 +58,6 @@ annotate TravelService.Bookings with @Capabilities.NavigationRestrictions.Restri
 
 
 annotate TravelService.Bookings.Supplements with @UI.CreateHidden : (up_.Travel.Status.code != #Open) {
-  Price  @readonly: (up_.Travel.Status.code = #Accepted) @mandatory: (up_.Travel.Status.code != #Accepted);
-  booked @readonly: (up_.Travel.Status.code = #Accepted) @mandatory: (up_.Travel.Status.code != #Accepted);
+  Price  @Common.FieldControl  : up_.Travel.Status.fieldControl;
+  booked @Common.FieldControl  : up_.Travel.Status.fieldControl;
 };

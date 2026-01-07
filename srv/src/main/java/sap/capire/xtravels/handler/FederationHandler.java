@@ -1,8 +1,8 @@
 package sap.capire.xtravels.handler;
 
 import static cds.gen.sap.capire.travels.TravelsModel_.BOOKINGS;
-import static cds.gen.sap.capire.travels.masterdata.Masterdata_.FLIGHTS;
-import static cds.gen.sap.capire.travels.masterdata.Masterdata_.SUPPLEMENTS;
+import static cds.gen.sap.capire.xflights.Xflights_.FLIGHTS;
+import static cds.gen.sap.capire.xflights.Xflights_.SUPPLEMENTS;
 import static com.sap.cds.services.cds.CqnService.EVENT_CREATE;
 import static com.sap.cds.services.cds.CqnService.EVENT_UPDATE;
 import static com.sap.cds.services.cds.CqnService.EVENT_UPSERT;
@@ -10,8 +10,8 @@ import static com.sap.cds.services.draft.DraftService.EVENT_DRAFT_NEW;
 import static com.sap.cds.services.draft.DraftService.EVENT_DRAFT_PATCH;
 
 import cds.gen.sap.capire.flights.data.Data;
-import cds.gen.sap.capire.travels.masterdata.Flights;
-import cds.gen.sap.capire.travels.masterdata.Supplements;
+import cds.gen.sap.capire.xflights.Flights;
+import cds.gen.sap.capire.xflights.Supplements;
 import com.google.common.collect.Maps;
 import com.sap.cds.CdsData;
 import com.sap.cds.Result;
