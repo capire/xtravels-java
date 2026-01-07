@@ -13,7 +13,7 @@ entity Travels : managed {
   BeginDate    : Date default $now;
   EndDate      : Date default $now;
   BookingFee   : Price default 0;
-  TotalPrice   : Price @readonly;
+  TotalPrice   : Price default 0 @readonly;
   Currency     : Currency default 'EUR';
   Status       : Association to TravelStatus default 'O';
   Agency       : Association to TravelAgencies;
