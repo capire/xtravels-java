@@ -1,4 +1,4 @@
-package sap.capire.xtravels;
+package sap.capire.xtravels.it;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.notNullValue;
@@ -8,16 +8,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static sap.capire.xtravels.TravelTestUtils.createTravelData;
 
-import cds.gen.travelservice.Bookings;
-import cds.gen.travelservice.Travels;
-import com.sap.cds.CdsData;
-import com.sap.cds.CdsJsonConverter;
-import com.sap.cds.CdsJsonConverter.UnknownPropertyHandling;
-import com.sap.cds.reflect.CdsModel;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +21,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+
+import com.sap.cds.CdsData;
+import com.sap.cds.CdsJsonConverter;
+import com.sap.cds.CdsJsonConverter.UnknownPropertyHandling;
+import com.sap.cds.reflect.CdsModel;
+
+import cds.gen.travelservice.Bookings;
+import cds.gen.travelservice.Travels;
 
 /** Integration tests for the CAP Travel Service OData endpoints */
 @SpringBootTest
@@ -317,16 +321,5 @@ class TravelServiceIntegrationTest {
         .andExpect(jsonPath("$.BookingFee").value(90));
   }
 
-  private Travels createTravelData(String testName) {
-    Travels travel = Travels.create();
-    travel.setIsActiveEntity(true);
-    travel.setDescription(testName + " - Test Travel");
-    travel.setBeginDate(LocalDate.of(2024, 6, 1));
-    travel.setEndDate(LocalDate.of(2024, 6, 14));
-    travel.setBookingFee(BigDecimal.valueOf(100));
-    travel.setCurrencyCode("EUR");
-    travel.setAgencyId("070001");
-    travel.setCustomerId("000001");
-    return travel;
-  }
+
 }

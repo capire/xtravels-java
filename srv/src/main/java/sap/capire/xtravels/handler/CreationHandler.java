@@ -41,9 +41,10 @@ class CreationHandler implements EventHandler {
 
     if (travel.getBookings() != null) {
       int nextPos = 1;
+      LocalDate now = LocalDate.now(); // $now uses timestamp unexpectedly
       for (Bookings booking : travel.getBookings()) {
         booking.setPos(nextPos++);
-        booking.setBookingDate(LocalDate.now()); // $now uses timestamp unexpectedly
+        booking.setBookingDate(now);
       }
     }
   }
