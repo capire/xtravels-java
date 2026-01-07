@@ -29,7 +29,7 @@ annotate TravelService.Bookings with @UI.CreateHidden : (Travel.Status.code != #
 annotate TravelService.Bookings with @UI.DeleteHidden : (Travel.Status.code != #Open);
 
 annotate TravelService.Bookings {
-  BookingDate   @Core.Computed;
+  BookingDate   @readonly;
   Flight        @readonly: (Travel.Status.code = #Accepted) @mandatory: (Travel.Status.code != #Accepted);
   FlightPrice   @readonly: (Travel.Status.code = #Accepted) @mandatory: (Travel.Status.code != #Accepted);
 };

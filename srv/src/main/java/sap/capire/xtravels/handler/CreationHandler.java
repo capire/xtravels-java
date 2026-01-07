@@ -13,6 +13,7 @@ import com.sap.cds.ql.Select;
 import com.sap.cds.services.handler.EventHandler;
 import com.sap.cds.services.handler.annotations.Before;
 import com.sap.cds.services.handler.annotations.ServiceName;
+import java.time.LocalDate;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -37,10 +38,18 @@ class CreationHandler implements EventHandler {
                 .columns(t -> t.ID().max().as("maxID")));
     int maxId = (int) result.single().get("maxID");
     travel.setId(++maxId);
+
+    if (travel.getBookings() != null) {
+      int nextPos = 1;
+      for (Bookings booking : travel.getBookings()) {
+        booking.setPos(nextPos++);
+        booking.setBookingDate(LocalDate.now()); // $now uses timestamp unexpectedly
+      }
+    }
   }
 
   // Fill in IDs as sequence numbers -> could be automated by auto-generation
-  @Before(event = EVENT_DRAFT_NEW)
+  @Before(event = {EVENT_CREATE, EVENT_DRAFT_NEW})
   void calculateBookingPos(Bookings_ ref, final Bookings booking) {
     var result = service.run(Select.from(ref).columns(t -> t.Pos().max().as("maxPos")));
     var maxPos = result.single().get("maxPos");
@@ -50,5 +59,6 @@ class CreationHandler implements EventHandler {
       int pos = (int) maxPos;
       booking.setPos(++pos);
     }
+    booking.setBookingDate(LocalDate.now());
   }
 }
