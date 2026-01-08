@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import cds.gen.travelservice.Bookings;
 import cds.gen.travelservice.Travels;
 
-public class TravelTestUtils {
+public class TestData {
 
     public static Travels createTravelData(String testName) {
         Travels travel = Travels.create();

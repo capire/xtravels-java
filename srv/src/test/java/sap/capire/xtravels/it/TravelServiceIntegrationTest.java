@@ -8,7 +8,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static sap.capire.xtravels.TravelTestUtils.createTravelData;
+import static sap.capire.xtravels.TestData.createTravelData;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
