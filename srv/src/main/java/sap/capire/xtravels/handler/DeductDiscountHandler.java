@@ -1,6 +1,5 @@
 package sap.capire.xtravels.handler;
 
-
 import cds.gen.travelservice.TravelService;
 import cds.gen.travelservice.TravelService_;
 import cds.gen.travelservice.Travels;
