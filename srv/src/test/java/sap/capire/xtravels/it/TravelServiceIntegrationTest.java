@@ -8,12 +8,18 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static sap.capire.xtravels.TestData.createBookingData;
+import static sap.capire.xtravels.TestData.createSupplementData;
 import static sap.capire.xtravels.TestData.createTravelData;
 
+import cds.gen.travelservice.Bookings;
+import cds.gen.travelservice.Travels;
+import com.sap.cds.CdsData;
+import com.sap.cds.CdsJsonConverter;
+import com.sap.cds.CdsJsonConverter.UnknownPropertyHandling;
+import com.sap.cds.reflect.CdsModel;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,14 +27,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-
-import com.sap.cds.CdsData;
-import com.sap.cds.CdsJsonConverter;
-import com.sap.cds.CdsJsonConverter.UnknownPropertyHandling;
-import com.sap.cds.reflect.CdsModel;
-
-import cds.gen.travelservice.Bookings;
-import cds.gen.travelservice.Travels;
 
 /** Integration tests for the CAP Travel Service OData endpoints */
 @SpringBootTest
@@ -73,7 +71,7 @@ class TravelServiceIntegrationTest {
   @Test
   @WithMockUser("admin")
   void shouldCreateTravel() throws Exception {
-    Travels travel = createTravelData("shouldCreateTravel");
+    Travels travel = createTravelData();
 
     mockMvc
         .perform(post(TRAVELS_ENDPOINT).contentType("application/json").content(travel.toJson()))
@@ -90,7 +88,7 @@ class TravelServiceIntegrationTest {
   @Test
   @WithMockUser("admin")
   void shouldCreateAndRetrieveTravelSuccessfully() throws Exception {
-    Travels travel = createTravelData("shouldCreateAndRetrieveTravelSuccessfully");
+    Travels travel = createTravelData();
     travel.setBookingFee(BigDecimal.valueOf(200.0));
     travel.setCurrencyCode("USD");
 
@@ -119,16 +117,9 @@ class TravelServiceIntegrationTest {
   @Test
   @WithMockUser("admin")
   void shouldCreateAndRetrieveTravelWithBookingsSuccessfully() throws Exception {
-    Travels travel = createTravelData("shouldCreateAndRetrieveTravelWithBookingsSuccessfully");
-    Bookings booking = Bookings.create();
-    booking.setFlightId("GA0322");
-    booking.setFlightDate(LocalDate.of(2024, 6, 2));
-    booking.setFlightPrice(BigDecimal.valueOf(1103));
-    booking.setCurrencyCode("EUR");
-    Bookings.Supplements supplement = Bookings.Supplements.create();
-    supplement.setBookedId("bv-0001");
-    supplement.setPrice(new BigDecimal("2.30"));
-    supplement.setCurrencyCode("EUR");
+    Travels travel = createTravelData();
+    Bookings booking = createBookingData();
+    Bookings.Supplements supplement = createSupplementData();
     booking.setSupplements(List.of(supplement));
     travel.setBookings(List.of(booking));
 
@@ -186,7 +177,7 @@ class TravelServiceIntegrationTest {
   @WithMockUser("admin")
   void shouldReturn400ForInvalidDiscountPercentage() throws Exception {
     // First create a travel
-    Travels travelData = createTravelData("shouldReturn400ForInvalidDiscountPercentage");
+    Travels travelData = createTravelData();
     String response =
         mockMvc
             .perform(
@@ -217,7 +208,7 @@ class TravelServiceIntegrationTest {
   @WithMockUser("admin")
   void shouldExecuteAcceptTravelAction() throws Exception {
     // First create a travel
-    Travels travelData = createTravelData("shouldExecuteAcceptTravelAction");
+    Travels travelData = createTravelData();
     String response =
         mockMvc
             .perform(
@@ -252,7 +243,7 @@ class TravelServiceIntegrationTest {
   @WithMockUser("admin")
   void shouldExecuteRejectTravelAction() throws Exception {
     // First create a travel
-    Travels travelData = createTravelData("shouldExecuteRejectTravelAction");
+    Travels travelData = createTravelData();
     String response =
         mockMvc
             .perform(
@@ -287,7 +278,7 @@ class TravelServiceIntegrationTest {
   @WithMockUser("admin")
   void shouldExecuteDeductDiscountAction() throws Exception {
     // First create a travel
-    Travels travelData = createTravelData("shouldExecuteDeductDiscountAction");
+    Travels travelData = createTravelData();
 
     String response =
         mockMvc
@@ -320,6 +311,4 @@ class TravelServiceIntegrationTest {
         .andExpect(content().contentTypeCompatibleWith("application/json"))
         .andExpect(jsonPath("$.BookingFee").value(90));
   }
-
-
 }
