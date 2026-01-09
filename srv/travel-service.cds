@@ -1,4 +1,4 @@
-using { sap, sap.capire.travels as db } from '../db/schema';
+using { sap, sap.capire.travels as db, sap.capire.xflights } from '../db/schema';
 
 @path: 'travel' service TravelService {
 
@@ -10,8 +10,8 @@ using { sap, sap.capire.travels as db } from '../db/schema';
   }
 
   // Also expose Flights and Currencies for travel booking UIs and Value Helps
-  @readonly entity Flights as projection on db.masterdata.Flights;
-  @readonly entity Supplements as projection on db.masterdata.Supplements;
+  @readonly entity Flights as projection on xflights.Flights;
+  @readonly entity Supplements as projection on xflights.Supplements;
   @readonly entity Currencies as projection on sap.common.Currencies;
 }
 

@@ -1,6 +1,6 @@
 code;name
 O;Open
-R;InReview
+P;InReview
 B;Blocked
 A;Accepted
 X;Rejected
