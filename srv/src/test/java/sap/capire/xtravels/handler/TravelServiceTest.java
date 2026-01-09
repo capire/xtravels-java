@@ -13,6 +13,7 @@ import cds.gen.travelservice.Travels;
 import com.sap.cds.Result;
 import com.sap.cds.ql.Insert;
 import com.sap.cds.ql.cqn.CqnInsert;
+import com.sap.cds.services.utils.CdsErrorStatuses;
 import java.math.BigDecimal;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -48,7 +49,7 @@ public class TravelServiceTest {
     assertThatServiceException()
         .isThrownBy(() -> srv.run(insert))
         .isBadRequest()
-        .withLocalizedMessage("Description too short")
+        .withMessageOrKey("Description too short")
         .thatTargets("Description");
   }
 
@@ -61,6 +62,7 @@ public class TravelServiceTest {
     assertThatServiceException()
         .isThrownBy(() -> srv.run(insert))
         .isBadRequest()
+        .withMessageOrKey(CdsErrorStatuses.VALUE_REQUIRED.getCodeString())
         .withLocalizedMessage("Provide the missing value.")
         .thatTargets("Customer");
   }
@@ -74,7 +76,7 @@ public class TravelServiceTest {
     assertThatServiceException()
         .isThrownBy(() -> srv.run(insert))
         .isBadRequest()
-        .withLocalizedMessage("Customer does not exist")
+        .withMessageOrKey("Customer does not exist")
         .thatTargets("Customer_ID");
   }
 
@@ -87,7 +89,7 @@ public class TravelServiceTest {
     assertThatServiceException()
         .isThrownBy(() -> srv.run(insert))
         .isBadRequest()
-        .withLocalizedMessage("Agency does not exist")
+        .withMessageOrKey("Agency does not exist")
         .thatTargets("Agency");
   }
 
