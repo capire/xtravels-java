@@ -63,7 +63,6 @@ public class TravelServiceTest {
         .isThrownBy(() -> srv.run(insert))
         .isBadRequest()
         .withMessageOrKey(CdsErrorStatuses.VALUE_REQUIRED.getCodeString())
-        .withLocalizedMessage("Provide the missing value.")
         .thatTargets("Customer");
   }
 

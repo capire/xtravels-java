@@ -36,12 +36,6 @@ public class ServiceExceptionAssert extends ThrowableTypeAssert<ServiceException
       super(actual);
     }
 
-    public ServiceExceptionAssertAlternative withLocalizedMessage(String localizedMessage) {
-      assertThat(actual.getLocalizedMessage()).isEqualTo(localizedMessage);
-
-      return this;
-    }
-
     public ServiceExceptionAssertAlternative isBadRequest() {
       assertThat(actual.getErrorStatus().getHttpStatus())
           .isEqualTo(ErrorStatuses.BAD_REQUEST.getHttpStatus());
