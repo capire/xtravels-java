@@ -92,33 +92,10 @@
           "name": "sap.fe.templates.ListReport",
           "options": {
             "settings": {
-              "entitySet": "Travels",
+              "contextPath": "/Travels",
               "controlConfiguration": {
                 "@com.sap.vocabularies.UI.v1.SelectionFields": {
                   "useSemanticDateRange": true
-                },
-                "@com.sap.vocabularies.UI.v1.LineItem": {
-                  "actions": {
-                    "MenuActions": {
-                      "text": "{i18n>export}",
-                      "menu": [
-                        "exportJSON",
-                        "exportCSV"
-                      ]
-                    },
-                    "exportJSON": {
-                      "press": "sap.capire.travels.ext.CustomActions.exportJSON",
-                      "enabled": true,
-                      "visible": true,
-                      "text": "{i18n>json}"
-                    },
-                    "exportCSV": {
-                      "press": "sap.capire.travels.ext.CustomActions.exportCSV",
-                      "enabled": true,
-                      "visible": true,
-                      "text": "{i18n>csv}"
-                    }
-                  }
                 }
               },
               "variantManagement": "Page",
@@ -139,7 +116,7 @@
           "name": "sap.fe.templates.ObjectPage",
           "options": {
             "settings": {
-              "entitySet": "Travels",
+              "contextPath": "/Travels",
               "navigation": {
                 "Bookings": {
                   "detail": {
@@ -166,7 +143,7 @@
           "name": "sap.fe.templates.ObjectPage",
           "options": {
             "settings": {
-              "entitySet": "Bookings",
+              "contextPath": "/Travels/Bookings",
               "editableHeaderContent": false
             }
           }
