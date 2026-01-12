@@ -64,7 +64,7 @@ annotate TravelService.Travels with @UI : {
     { Value : (Customer.ID) },
     { Value : (Agency.ID) },
     { Value : Description },
-    { Value : Status.code,
+    { Value : (Status.code),
       Criticality : (
         Status.code == #Accepted ? 3 :
         Status.code == #Blocked ? 2 : 
@@ -172,7 +172,7 @@ annotate TravelService.Bookings.Supplements with @UI : {
     }]
   },
   LineItem : [
-    { Value : booked.ID, Label : '{i18n>ProductID}'    },
+    { Value : (booked.ID), Label : '{i18n>ProductID}'    },
     { Value : Price,     Label : '{i18n>ProductPrice}' }
   ],
 };

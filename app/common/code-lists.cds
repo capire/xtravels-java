@@ -109,13 +109,13 @@ annotate sap.capire.travels.Bookings {
 annotate sap.capire.travels.Bookings.Supplements {
 
   booked @Common.ValueList: {
-    CollectionPath : 'Supplement',
+    CollectionPath : 'Supplements',
     Label : '',
     Parameters : [
     {$Type: 'Common.ValueListParameterInOut', LocalDataProperty: booked_ID, ValueListProperty: 'ID'},
-    {$Type: 'Common.ValueListParameterInOut', LocalDataProperty: Price,        ValueListProperty: 'Price'},
-    {$Type: 'Common.ValueListParameterInOut', LocalDataProperty: Currency_code, ValueListProperty: 'Currency_code'},
-    {$Type: 'Common.ValueListParameterDisplayOnly', ValueListProperty: 'Description'}
+    {$Type: 'Common.ValueListParameterInOut', LocalDataProperty: Price,        ValueListProperty: 'price'},
+    {$Type: 'Common.ValueListParameterInOut', LocalDataProperty: Currency_code, ValueListProperty: 'currency_code'},
+    {$Type: 'Common.ValueListParameterDisplayOnly', ValueListProperty: 'descr'}
     ]
   };
 
