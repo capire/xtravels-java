@@ -16,8 +16,13 @@ annotate TravelService.Travels with {
     when not exists Customer then 'Customer does not exist'
   end);
 
-  EndDate @assert: (case
-    when EndDate < BeginDate then error('ASSERT_ENDDATE_AFTER_BEGINDATE', null, (BeginDate, EndDate))
+  // EndDate @assert: (case
+  //   when EndDate < BeginDate then error('ASSERT_ENDDATE_AFTER_BEGINDATE', null, (BeginDate, EndDate))
+  // end);
+
+    EndDate @assert: (case 
+    // when EndDate < BeginDate then 'ASSERT_ENDDATE_AFTER_BEGINDATE' 
+    when exists Bookings [Flight.date > Travel.EndDate] then 'ASSERT_BOOKINGS_IN_TRAVEL_PERIOD'
   end);
 
   BookingFee @assert: (case
