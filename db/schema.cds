@@ -2,9 +2,9 @@ namespace sap.capire.travels;
 
 using { sap, managed, Country, Currency } from '@sap/cds/common';
 using {
-  sap.capire.travels.masterdata.Flights,
-  sap.capire.travels.masterdata.Supplements,
-} from './master-data';
+  sap.capire.xflights.Flights,
+  sap.capire.xflights.Supplements,
+} from './xflights';
 
 
 entity Travels : managed {
@@ -67,7 +67,7 @@ entity Passengers : managed {
 entity TravelStatus : sap.common.CodeList {
   key code : String(1) enum {
     Open     = 'O';
-    InReview = 'R';
+    InReview = 'P';
     Blocked  = 'B';
     Accepted = 'A';
     Rejected = 'X';
