@@ -21,6 +21,8 @@ import com.sap.cds.services.handler.annotations.HandlerOrder;
 import com.sap.cds.services.handler.annotations.ServiceName;
 import com.sap.cds.services.messages.MessageTarget;
 
+import cds.gen.travelservice.Passengers_;
+import cds.gen.travelservice.TravelAgencies_;
 import cds.gen.travelservice.TravelService;
 import cds.gen.travelservice.TravelService_;
 import cds.gen.travelservice.Travels;
@@ -35,6 +37,33 @@ public class TravelValidationHandler implements EventHandler {
 
     @Before(event = { EVENT_CREATE, EVENT_UPDATE, EVENT_DRAFT_PATCH })
     public void validateTravelBeforeWrite(Travels_ ref, Travels travel, EventContext ctx) {
+
+        if (travel.getDescription() != null && travel.getDescription().length() < 3) {
+            ctx.getMessages().error("Description too short").target(b -> b.get("Description"));
+        }
+
+        if (travel.getCustomerId() == null) {
+        if (travel.containsKey(Travels_.CUSTOMER_ID)) {
+            ctx.getMessages().error("409003").target(b -> b.get("Customer"));
+        }
+        } else {
+            var result =
+                ts.run(Select.from(Passengers_.class).byId(travel.getCustomerId()).columns(p -> p.ID()));
+            if (result.rowCount() == 0) {
+                ctx.getMessages().error("Customer does not exist").target(b -> b.get("Customer_ID"));
+            }
+        }
+
+        if (travel.getAgencyId() != null) {
+            var result =
+                ts.run(
+                    Select.from(TravelAgencies_.class).byId(travel.getAgencyId()).columns(a -> a.ID()));
+            if (result.rowCount() == 0) {
+                ctx.getMessages().error("Agency does not exist").target(b -> b.get("Agency"));
+            }
+        }
+
+
         if (!travel.containsKey(Travels.BEGIN_DATE) && !travel.containsKey(Travels.END_DATE)) {
             return;
         }
