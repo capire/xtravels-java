@@ -1,10 +1,13 @@
 package sap.capire.xtravels.handler;
 
+import static cds.gen.travelservice.TravelService_.BOOKINGS;
 import static cds.gen.travelservice.TravelService_.TRAVELS;
 import static com.sap.cds.services.cds.CqnService.EVENT_CREATE;
 import static com.sap.cds.services.cds.CqnService.EVENT_UPDATE;
 import static com.sap.cds.services.draft.DraftService.EVENT_DRAFT_PATCH;
 
+import cds.gen.travelservice.Bookings;
+import cds.gen.travelservice.Bookings_;
 import cds.gen.travelservice.Passengers_;
 import cds.gen.travelservice.TravelAgencies_;
 import cds.gen.travelservice.TravelService;
@@ -33,6 +36,7 @@ public class TravelValidationHandler implements EventHandler {
 
   @Before(event = {EVENT_CREATE, EVENT_UPDATE, EVENT_DRAFT_PATCH})
   public void validateTravelBeforeWrite(Travels_ ref, Travels travel, EventContext ctx) {
+    ref = travelRef(ref, travel);
 
     if (travel.getDescription() != null && travel.getDescription().length() < 3) {
       ctx.getMessages().error("Description too short").target(TRAVELS, b -> b.Description());
@@ -59,11 +63,18 @@ public class TravelValidationHandler implements EventHandler {
       }
     }
 
+    if (travel.getBookings() != null && !travel.getBookings().isEmpty()) {
+      for (Bookings booking : travel.getBookings()) {
+        booking.setTravel(travel);
+        Bookings_ bRef = bookingRef(ref.Bookings(), booking);
+        validateBookings(bRef, booking, ctx);
+        booking.setTravel(null);
+      }
+    }
+
     if (!travel.containsKey(Travels.BEGIN_DATE) && !travel.containsKey(Travels.END_DATE)) {
       return;
     }
-
-    ref = travelRef(ref, travel);
 
     LocalDate beginDate = travel.getBeginDate();
     LocalDate endDate = travel.getEndDate();
@@ -115,9 +126,55 @@ public class TravelValidationHandler implements EventHandler {
     return ref;
   }
 
-  @After(event = {EVENT_CREATE, EVENT_UPDATE})
+  @Before(event = {EVENT_CREATE, EVENT_UPDATE, EVENT_DRAFT_PATCH})
+  public void validateBookings(Bookings_ ref, Bookings bookings, EventContext ctx) {
+    ref = bookingRef(ref, bookings);
+
+    if (bookings.getFlightDate() != null) {
+      Travels travel = bookings.getTravel();
+      if (travel == null) {
+        var result =
+            ts.run(Select.from(ref.Travel()).columns(t -> t.BeginDate(), t -> t.EndDate()));
+        travel = result.single();
+      }
+
+      LocalDate flightDate = bookings.getFlightDate();
+      LocalDate beginDate = travel.getBeginDate();
+      LocalDate endDate = travel.getEndDate();
+
+      if (beginDate != null && endDate != null) {
+        if (flightDate.isBefore(beginDate) || flightDate.isAfter(endDate)) {
+          MessageTarget target =
+              travel != null
+                  ? MessageTarget.create(TRAVELS, t -> t.Bookings().Flight_date())
+                  : MessageTarget.create(BOOKINGS, t -> t.Flight_date());
+          ctx.getMessages().error("ASSERT_BOOKINGS_IN_TRAVEL_PERIOD").target(target);
+        }
+      }
+    }
+  }
+
+  private static Bookings_ bookingRef(Bookings_ ref, Bookings booking) {
+    String flightId = booking.getFlightId();
+    LocalDate flightDate = booking.getFlightDate();
+    if (flightId != null && flightDate != null) {
+      boolean isActiveEntity = booking.getIsActiveEntity() == Boolean.FALSE ? false : true;
+      ref.filter(
+          t ->
+              t.Flight_ID()
+                  .eq(flightId)
+                  .and(t.Flight_date().eq(flightDate))
+                  .and(t.IsActiveEntity().eq(isActiveEntity)));
+    }
+
+    return ref;
+  }
+
+  @After(
+      event = {EVENT_CREATE, EVENT_UPDATE},
+      entity = {Travels_.CDS_NAME, Bookings_.CDS_NAME})
   @HandlerOrder(HandlerOrder.LATE)
-  public void throwIfError(Travels travel, EventContext ctx) {
+  public void throwIfError(EventContext ctx) {
     ctx.getMessages().throwIfError();
   }
 }

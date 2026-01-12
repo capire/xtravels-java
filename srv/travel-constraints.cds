@@ -34,11 +34,11 @@ annotate TravelService.Travels with {
 
 annotate TravelService.Bookings with {
 
-  Flight {
-    date @assert: (case
-      when date not between $self.Travel.BeginDate and $self.Travel.EndDate then 'ASSERT_BOOKINGS_IN_TRAVEL_PERIOD'
-    end);
-  }
+  // Flight {
+  //   date @assert: (case
+  //     when date not between $self.Travel.BeginDate and $self.Travel.EndDate then 'ASSERT_BOOKINGS_IN_TRAVEL_PERIOD'
+  //   end);
+  // }
 
   FlightPrice @assert: (case
     when FlightPrice < 0 then 'ASSERT_FLIGHT_PRICE_POSITIVE'
