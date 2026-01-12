@@ -172,7 +172,7 @@ annotate TravelService.Bookings.Supplements with @UI : {
     }]
   },
   LineItem : [
-    { Value : booked.ID, Label : '{i18n>ProductID}'    },
+    { Value : (booked.ID), Label : '{i18n>ProductID}'    },
     { Value : Price,     Label : '{i18n>ProductPrice}' }
   ],
 };
