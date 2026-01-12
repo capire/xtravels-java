@@ -35,18 +35,18 @@ public class TravelValidationHandler implements EventHandler {
   public void validateTravelBeforeWrite(Travels_ ref, Travels travel, EventContext ctx) {
 
     if (travel.getDescription() != null && travel.getDescription().length() < 3) {
-      ctx.getMessages().error("Description too short").target(b -> b.get("Description"));
+      ctx.getMessages().error("Description too short").target(TRAVELS, b -> b.Description());
     }
 
     if (travel.getCustomerId() == null) {
       if (travel.containsKey(Travels_.CUSTOMER_ID)) {
-        ctx.getMessages().error("409003").target(b -> b.get("Customer"));
+        ctx.getMessages().error("409003").target(TRAVELS, b -> b.Customer_ID());
       }
     } else {
       var result =
           ts.run(Select.from(Passengers_.class).byId(travel.getCustomerId()).columns(p -> p.ID()));
       if (result.rowCount() == 0) {
-        ctx.getMessages().error("Customer does not exist").target(b -> b.get("Customer_ID"));
+        ctx.getMessages().error("Customer does not exist").target(TRAVELS, b -> b.Customer_ID());
       }
     }
 
@@ -55,7 +55,7 @@ public class TravelValidationHandler implements EventHandler {
           ts.run(
               Select.from(TravelAgencies_.class).byId(travel.getAgencyId()).columns(a -> a.ID()));
       if (result.rowCount() == 0) {
-        ctx.getMessages().error("Agency does not exist").target(b -> b.get("Agency"));
+        ctx.getMessages().error("Agency does not exist").target(TRAVELS, b -> b.Agency_ID());
       }
     }
 
