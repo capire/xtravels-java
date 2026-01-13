@@ -13,7 +13,7 @@ annotate TravelService.Travels with @(Common : {
   BeginDate   @readonly: (Status.code = #Accepted) @mandatory: (Status.code != #Accepted);
   EndDate     @readonly: (Status.code = #Accepted) @mandatory: (Status.code != #Accepted);
   Agency      @readonly: (Status.code = #Accepted) @mandatory: (Status.code != #Accepted);
-  Customer    @readonly: (Status.code = #Accepted) @mandatory: (Status.code != #Accepted);
+  Customer    @readonly: (Status.code = #Accepted);// @mandatory: (Status.code != #Accepted);
 } actions {
   deductDiscount @(
     Common.SideEffects.TargetProperties : ['in/TotalPrice', 'in/BookingFee'],

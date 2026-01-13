@@ -63,7 +63,7 @@ public class TravelServiceTest {
         .isThrownBy(() -> srv.run(insert))
         .isBadRequest()
         .withMessageOrKey(CdsErrorStatuses.VALUE_REQUIRED.getCodeString())
-        .thatTargets("Customer");
+        .thatTargets("Customer_ID");
   }
 
   @Test
@@ -89,7 +89,7 @@ public class TravelServiceTest {
         .isThrownBy(() -> srv.run(insert))
         .isBadRequest()
         .withMessageOrKey("Agency does not exist")
-        .thatTargets("Agency");
+        .thatTargets("Agency_ID");
   }
 
   @Test
