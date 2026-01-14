@@ -12,7 +12,7 @@ annotate TravelService.Travels with {
   // end);
 
   // Customer @assert: (case
-  //   when Customer is null then 'Customer must be specified'
+  //   when Customer is null then '409003'
   //   when not exists Customer then 'Customer does not exist'
   // end);
 

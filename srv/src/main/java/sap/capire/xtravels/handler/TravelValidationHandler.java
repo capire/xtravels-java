@@ -86,7 +86,7 @@ public class TravelValidationHandler implements EventHandler {
 
     if (endDate != null && beginDate == null) {
       Travels beforeImage = ts.run(Select.from(ref).columns(Travels_::BeginDate)).single();
-      endDate = beforeImage.getBeginDate();
+      beginDate = beforeImage.getBeginDate();
     }
 
     if (beginDate != null && endDate != null && beginDate.isAfter(endDate)) {
