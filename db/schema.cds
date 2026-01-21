@@ -2,20 +2,20 @@ namespace sap.capire.travels;
 
 using { sap, managed, Country, Currency } from '@sap/cds/common';
 using {
-  sap.capire.travels.masterdata.Flights,
-  sap.capire.travels.masterdata.Supplements,
-} from './master-data';
+  sap.capire.xflights.Flights,
+  sap.capire.xflights.Supplements,
+} from './xflights';
 
 
 entity Travels : managed {
-  key ID       : Integer default 0 @readonly;
+  key ID       : Integer default 0;
   Description  : String(1024);
   BeginDate    : Date default $now;
   EndDate      : Date default $now;
   BookingFee   : Price default 0;
-  TotalPrice   : Price @readonly;
+  TotalPrice   : Price default 0 @readonly;
   Currency     : Currency default 'EUR';
-  Status       : Association to TravelStatus default 'O';
+  Status       : Association to TravelStatus default #Open;
   Agency       : Association to TravelAgencies;
   Customer     : Association to Passengers;
   Bookings     : Composition of many Bookings on Bookings.Travel = $self;
@@ -67,10 +67,10 @@ entity Passengers : managed {
 entity TravelStatus : sap.common.CodeList {
   key code : String(1) enum {
     Open     = 'O';
-    InReview = 'R';
+    InReview = 'P';
     Blocked  = 'B';
     Accepted = 'A';
-    Canceled = 'X';
+    Rejected = 'X';
   }
 }
 

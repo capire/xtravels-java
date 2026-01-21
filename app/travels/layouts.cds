@@ -32,7 +32,6 @@ annotate TravelService.Travels with @UI : {
   ],
 
   LineItem : [
-
     { $Type  : 'UI.DataFieldForAction', Action : 'TravelService.deductDiscount', Label  : '{i18n>DeductDiscount}' },
 
     { Value : ID,            @UI.Importance : #High },
@@ -43,14 +42,12 @@ annotate TravelService.Travels with @UI : {
     { Value : EndDate,       @HTML5.CssDefaults: {width:'9em'} },
     { Value : BookingFee,    @HTML5.CssDefaults: {width:'10em'} },
     { Value : TotalPrice,    @HTML5.CssDefaults: {width:'12em'} },
-    { Value : (Status.code),
+    { Value : (Status.code), @UI.Importance : #High, @HTML5.CssDefaults: {width:'10em'},
       Criticality : (
         Status.code == #Accepted ? 3 :
-        Status.code == #Open OR Status.code == #InReview ? 2 :
-        Status.code == #Canceled OR Status.code == #Blocked ? 1 : 0
+        Status.code == #Blocked ? 2 : 
+        Status.code == #Rejected ? 1 : 0
       ),
-      @UI.Importance : #High,
-      @HTML5.CssDefaults: {width:'10em'}
     }
   ],
 
@@ -70,8 +67,8 @@ annotate TravelService.Travels with @UI : {
     { Value : (Status.code),
       Criticality : (
         Status.code == #Accepted ? 3 :
-        Status.code == #Open OR Status.code == #InReview ? 2 :
-        Status.code == #Canceled OR Status.code == #Blocked ? 1 : 0
+        Status.code == #Blocked ? 2 : 
+        Status.code == #Rejected ? 1 : 0
       ),
     },
     { Value : BeginDate },
@@ -105,16 +102,16 @@ annotate TravelService.Bookings with @UI : {
   SelectionFields : [],
 
   LineItem : [
-    { Value : Flight.icon, Label : '  '},
-    { Value : (Flight.ID), Label : '{i18n>FlightID}' },
-    { Value : (Flight.date), Label : '{i18n>FlightDate}' },
-    { Value : BookingDate, Label : '{i18n>BookingDate}' },
-    { Value : FlightPrice, Label : '{i18n>FlightPrice}' },
-    { Value : Flight.departure, Label : '{i18n>Departure}', ![@Common.FieldControl]: #ReadOnly },
-    { Value : Flight.arrival, Label : '{i18n>Arrival}', ![@Common.FieldControl]: #ReadOnly },
-    { Value : Flight.origin, Label : '{i18n>Origin}', ![@Common.FieldControl]: #ReadOnly },
-    { Value : Flight.destination, Label : '{i18n>Destination}', ![@Common.FieldControl]: #ReadOnly },
-    { Value : Flight.airline, Label : '{i18n>Airline}', ![@Common.FieldControl]: #ReadOnly },
+    { Value : Flight.icon,        Label : '  ',                 @HTML5.CssDefaults: {width:'80px'} },
+    { Value : (Flight.ID),        Label : '{i18n>FlightID}' },   // REVISIT: the parenthesis are required for editable fields ?!?
+    { Value : (Flight.date),      Label : '{i18n>FlightDate}' }, // REVISIT: the parenthesis are required for editable fields ?!?
+    { Value : FlightPrice,        Label : '{i18n>FlightPrice}' },
+    { Value : Flight.departure,   Label : '{i18n>Departure}',   @HTML5.CssDefaults: {width:'6em'}, @Common.FieldControl: #ReadOnly },
+    { Value : Flight.arrival,     Label : '{i18n>Arrival}',     @HTML5.CssDefaults: {width:'4em'}, @Common.FieldControl: #ReadOnly },
+    { Value : Flight.origin,      Label : '{i18n>Origin}',      @HTML5.CssDefaults: {width:'19em'}, @Common.FieldControl: #ReadOnly },
+    { Value : Flight.destination, Label : '{i18n>Destination}', @HTML5.CssDefaults: {width:'19em'}, @Common.FieldControl: #ReadOnly },
+    { Value : Flight.airline,     Label : '{i18n>Airline}',     @HTML5.CssDefaults: {width:'11em'}, @Common.FieldControl: #ReadOnly },
+    { Value : BookingDate,        Label : '{i18n>BookingDate}' },
   ],
 
   Facets : [{
@@ -153,7 +150,7 @@ annotate TravelService.Bookings with @UI : {
   ]},
 };
 
-annotate sap.capire.travels.masterdata.Flights:icon with @UI.IsImageURL;
+annotate sap.capire.xflights.Flights:icon with @UI.IsImageURL;
 
 annotate TravelService.Bookings.Supplements with @UI : {
   Identification : [
@@ -170,12 +167,11 @@ annotate TravelService.Bookings.Supplements with @UI : {
     Visualizations : ['@UI.LineItem'],
     SortOrder      : [{
       $Type      : 'Common.SortOrderType',
-      Property   : ID,
+      Property   : booked.ID,
       Descending : false
     }]
   },
   LineItem : [
-    { Value : ID                                       },
     { Value : (booked.ID), Label : '{i18n>ProductID}'    },
     { Value : Price,     Label : '{i18n>ProductPrice}' }
   ],

@@ -1,16 +1,14 @@
 using { TravelService.Travels } from './travel-service';
 
-// Note: The @flow.status annotation makes that field @readonly by default
-annotate Travels with @flow.status: (Status) actions {
-  deductDiscount  @from: [ #Open ]; // can only be called on #Open travels
+annotate Travels with @flow.status: Status actions {
+  deductDiscount  @from: [ #Open ]; // restricted to #Open travels
   acceptTravel    @from: [ #Open ]                @to: #Accepted;
-  rejectTravel    @from: [ #Open ]                @to: #Canceled;
-  reopenTravel    @from: [ #Canceled, #Accepted ] @to: #Open;
+  rejectTravel    @from: [ #Open ]                @to: #Rejected;
+  reopenTravel    @from: [ #Rejected, #Accepted ] @to: #Open;
 }
 
 // workaround to integrate with draft lifecycle
 extend Travels with actions {
-    @from: [#Open, #Accepted]
-    action draftEdit(PreserveChanges: Boolean) returns Travels; // define to annotate
+  @from: [ #Open, #Accepted ]
+  action draftEdit(PreserveChanges: Boolean) returns Travels; // define to annotate
 }
-

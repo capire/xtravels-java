@@ -1,4 +1,4 @@
-using { sap.capire.travels as schema } from '../db/schema';
+using { sap.capire.travels as schema } from '../../db/schema';
 
 //
 // annotations that control rendering of fields and labels
@@ -19,16 +19,18 @@ annotate schema.Travels with @title: '{i18n>Travel}' {
   TotalPrice  @title: '{i18n>TotalPrice}'    @Measures.ISOCurrency: Currency_code;
   Customer    @title: '{i18n>Customer}'      @Common: { Text: Customer.LastName, TextArrangement : #TextOnly };
   Agency      @title: '{i18n>Agency}'        @Common: { Text: Agency.Name, TextArrangement : #TextOnly };
-  Status      @title: '{i18n>TravelStatus}'
+  Status      @title: '{i18n>TravelStatus}'  @Common: { Text: Status.name, TextArrangement : #TextOnly };
 }
 
 annotate schema.TravelStatus {
   code @title: '{i18n>TravelStatus}'
     @Common.Text: name
     @UI.ValueCriticality: [
-      { Criticality: #Positive, Value: 'A', },
-      { Criticality: #Critical, Value: 'O',  },
-      { Criticality: #Negative, Value: 'X',  }
+      { Criticality: 3, Value: 'A', },
+      { Criticality: 2, Value: 'O', },
+      { Criticality: 2, Value: 'P', },
+      { Criticality: 1, Value: 'B', },
+      { Criticality: 1, Value: 'X', }
     ]
 }
 
@@ -42,7 +44,7 @@ annotate schema.Bookings with @title: '{i18n>Booking}' {
 }
 
 annotate schema.Bookings.Supplements with @title: '{i18n>BookingSupplement}' {
-  ID  @title: '{i18n>BookingSupplementID}';
+  ID  @title: '{i18n>BookingSupplementID}'; // @Common.Text: booked.descr;
   booked        @title: '{i18n>SupplementID}'  @Common.Text: booked.descr;
   Price             @title: '{i18n>Price}'         @Measures.ISOCurrency: Currency_code;
   Currency          @title: '{i18n>CurrencyCode}';
@@ -74,12 +76,12 @@ annotate schema.Passengers with @title: '{i18n>Passenger}' {
 }
 
 
-using { TravelService } from '../srv/travel-service';
+using { TravelService } from '../../srv/travel-flows';
 
 annotate TravelService.Travels with actions {
-  rejectTravel    @title: '{i18n>RejectTravel}';
-  acceptTravel    @title: '{i18n>AcceptTravel}';
-  reopenTravel    @title: '{i18n>ReopenTravel}';
+  acceptTravel    @title: '{i18n>Accept}';
+  rejectTravel    @title: '{i18n>Reject}';
+  reopenTravel    @title: '{i18n>Reopen}';
   deductDiscount  @title: '{i18n>DeductDiscount}';
 };
 
