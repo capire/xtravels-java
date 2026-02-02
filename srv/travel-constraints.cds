@@ -8,11 +8,12 @@ annotate TravelService.Travels with {
   end);
 
   Agency @assert: (case
+    when Agency is null then null // handled by @mandatory
     when not exists Agency then 'Agency does not exist'
   end);
 
   Customer @assert: (case
-    when Customer is null then 'Customer must be specified'
+    when Customer is null then null // handled by @mandatory
     when not exists Customer then 'Customer does not exist'
   end);
 
@@ -26,6 +27,9 @@ annotate TravelService.Travels with {
 
 };
 
+// avoid propagation of @assert to FKs
+annotate TravelService.Travels:Agency.ID with @assert: null;
+annotate TravelService.Travels:Customer.ID with @assert: null;
 
 annotate TravelService.Bookings with {
 

@@ -13,7 +13,6 @@ import cds.gen.travelservice.Travels;
 import com.sap.cds.Result;
 import com.sap.cds.ql.Insert;
 import com.sap.cds.ql.cqn.CqnInsert;
-import com.sap.cds.services.utils.CdsErrorStatuses;
 import java.math.BigDecimal;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -62,8 +61,8 @@ public class TravelServiceTest {
     assertThatServiceException()
         .isThrownBy(() -> srv.run(insert))
         .isBadRequest()
-        .withMessageOrKey(CdsErrorStatuses.VALUE_REQUIRED.getCodeString())
-        .thatTargets("Customer");
+        .withMessageOrKey("409003") // @mandatory
+        .thatTargets("Customer_ID", "Customer.ID");
   }
 
   @Test
@@ -76,7 +75,7 @@ public class TravelServiceTest {
         .isThrownBy(() -> srv.run(insert))
         .isBadRequest()
         .withMessageOrKey("Customer does not exist")
-        .thatTargets("Customer_ID");
+        .thatTargets("Customer", "Customer_ID");
   }
 
   @Test
@@ -89,7 +88,7 @@ public class TravelServiceTest {
         .isThrownBy(() -> srv.run(insert))
         .isBadRequest()
         .withMessageOrKey("Agency does not exist")
-        .thatTargets("Agency");
+        .thatTargets("Agency", "Agency_ID");
   }
 
   @Test
