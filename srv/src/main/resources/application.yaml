@@ -14,10 +14,6 @@ management:
     db.enabled: true
 cds:
   drafts.enforce-readonly: true
-  security.mock.users:
-    admin:
-      roles:
-      - admin
   data-source.csv.paths:
   - "db/data/**"
   - "../db/data/**"
