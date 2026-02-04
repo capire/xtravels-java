@@ -33,6 +33,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 22
+          registry-url: https://npm.pkg.github.com/
       - uses: actions/setup-java@v5
         with:
           distribution: sapmachine
@@ -46,6 +47,9 @@ jobs:
           username: ${{ vars.CF_USERNAME }}
           password: ${{ secrets.CF_PASSWORD }}
       - run: npm install
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
       - run: npx cds up
 
       - run: cf logs "${{ env.APP_NAME }}" --recent
