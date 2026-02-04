@@ -14,10 +14,6 @@ management:
     db.enabled: true
 cds:
   drafts.enforce-readonly: true
-  security.mock.users:
-    admin:
-      roles:
-      - admin
   data-source.csv.paths:
   - "db/data/**"
   - "../db/data/**"
@@ -26,6 +22,15 @@ cds:
   - "node_modules/@capire/**"
   - "../node_modules/@capire/**"
   - "../../node_modules/@capire/**"
+---
+spring:
+  config.activate.on-profile: "!cloud"
+
+cds:
+  security.mock.users:
+    admin:
+      roles:
+        - admin
 ---
 spring:
   config.activate.on-profile: hybrid
