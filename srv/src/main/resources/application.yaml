@@ -17,7 +17,7 @@ cds:
   security.mock.users:
     admin:
       roles:
-        - admin
+      - admin
   data-source.csv.paths:
   - "db/data/**"
   - "../db/data/**"
