@@ -13,7 +13,6 @@ import com.sap.cds.ql.Select;
 import com.sap.cds.services.handler.EventHandler;
 import com.sap.cds.services.handler.annotations.Before;
 import com.sap.cds.services.handler.annotations.ServiceName;
-import java.time.LocalDate;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -41,10 +40,8 @@ class CreationHandler implements EventHandler {
 
     if (travel.getBookings() != null) {
       int nextPos = 1;
-      LocalDate now = LocalDate.now(); // $now uses timestamp unexpectedly
       for (Bookings booking : travel.getBookings()) {
         booking.setPos(nextPos++);
-        booking.setBookingDate(now);
       }
     }
   }
@@ -60,6 +57,5 @@ class CreationHandler implements EventHandler {
       int pos = (int) maxPos;
       booking.setPos(++pos);
     }
-    booking.setBookingDate(LocalDate.now());
   }
 }
