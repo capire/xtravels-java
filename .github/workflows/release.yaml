@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   tests:
-     uses: capire/xtravels-java/.github/workflows/test.yaml@main
+     uses: capire/xtravels-java/.github/workflows/maven.yaml@main
      secrets: inherit
   deploy-cf:
     needs: [tests]
