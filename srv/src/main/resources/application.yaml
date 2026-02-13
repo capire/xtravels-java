@@ -14,6 +14,10 @@ management:
     db.enabled: true
 cds:
   drafts.enforce-readonly: true
+  security.mock.users:
+    admin:
+      roles:
+      - admin
   data-source.csv.paths:
   - "db/data/**"
   - "../db/data/**"
@@ -24,13 +28,18 @@ cds:
   - "../../node_modules/@capire/**"
 ---
 spring:
-  config.activate.on-profile: "!cloud"
-
+  config.activate.on-profile: "cloud"
 cds:
-  security.mock.users:
-    admin:
-      roles:
-        - admin
+  security.mock.enabled: false # required due to AMS lib
+  remote.services:
+    xflights:
+      type: hcql
+      model: sap.capire.flights.data
+      binding:
+        name: xtravels-ias
+        options:
+          url: ${XFLIGHTS_URL} # from mta.yaml
+          ias-dependency-name: xflights-data
 ---
 spring:
   config.activate.on-profile: hybrid
