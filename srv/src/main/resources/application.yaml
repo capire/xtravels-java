@@ -38,8 +38,8 @@ cds:
       binding:
         name: xtravels-ias
         options:
-          url: ${XFLIGHTS_URL} # from mta.yaml
-          ias-dependency-name: xflights-data
+          url: ${XFLIGHTS_URL}/hcql # from mta.yaml
+          ias-dependency-name: DataConsumer
 ---
 spring:
   config.activate.on-profile: hybrid
@@ -51,6 +51,8 @@ cds:
       destination:
         properties:
           url: http://localhost:8081/hcql
+          User: consumer
+          Password:
 ---
 spring:
   config.activate.on-profile: default
