@@ -37,6 +37,7 @@ cds:
       model: sap.capire.flights.data
       binding:
         name: xtravels-ias
+        onBehalfOf: systemUser
         options:
           url: ${XFLIGHTS_URL}/hcql # from mta.yaml
           ias-dependency-name: DataConsumer
