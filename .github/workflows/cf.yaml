@@ -50,7 +50,10 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
-      - run: |
+      - name: Set xflights URL
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
           xflights=$(gh api repos/capire/xflights-java/deployments --jq '.[0].id' | \
           xargs -I{} gh api repos/capire/xflights-java/deployments/{}/statuses \
           --jq '.[] | select(.state=="success") | .environment_url' | head -1)
