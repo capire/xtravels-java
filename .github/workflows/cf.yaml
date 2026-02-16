@@ -58,7 +58,7 @@ jobs:
           xargs -I{} gh api repos/capire/xflights-java/deployments/{}/statuses \
           --jq '.[] | select(.state=="success") | .environment_url' | head -1)
           echo "Connecting to xflights at $xflights"
-          sed -i "s/XFLIGHTS_URL:.*/XFLIGHTS_URL: $xflights/" mta.yaml
+          sed -i "s|XFLIGHTS_URL:.*|XFLIGHTS_URL: $xflights|" mta.yaml
       - run: npx cds up
 
       - run: cf logs "${{ env.APP_NAME }}" --recent
