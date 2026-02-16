@@ -28,7 +28,7 @@ cds:
   - "../../node_modules/@capire/**"
 ---
 spring:
-  config.activate.on-profile: "cloud"
+  config.activate.on-profile: cloud
 cds:
   security.mock.enabled: false # required due to AMS lib
   remote.services:
@@ -51,10 +51,12 @@ cds:
     xflights:
       type: hcql
       model: sap.capire.flights.data
+      http:
+        suffix: /hcql
       destination:
         properties:
-          url: http://localhost:8081/hcql
-          User: consumer
+          url: http://localhost:8081
+          User: internal
           Password:
 ---
 spring:
