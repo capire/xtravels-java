@@ -53,7 +53,7 @@ jobs:
       - name: Set xflights URL
         env:
           GH_TOKEN: ${{ github.token }}
-          ENVIRONMENT: ${{ inputs.environment }}
+          ENVIRONMENT: ${{ inputs.environment || 'Staging' }}
         run: |
           xflights=$(
             gh api --method GET "repos/capire/xflights-java/deployments?environment=$ENVIRONMENT&per_page=1" --jq '.[0].id' \
