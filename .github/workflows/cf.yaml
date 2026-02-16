@@ -53,11 +53,12 @@ jobs:
       - name: Set xflights URL
         env:
           GH_TOKEN: ${{ github.token }}
+          ENVIRONMENT: ${{ inputs.environment }}
         run: |
           xflights=$(
-            gh api --method GET "repos/capire/xflights-java/deployments?environment=Staging&per_page=1" --jq '.[0].id' | \
-              xargs -I% gh api "repos/capire/xflights-java/deployments/%/statuses" \
-                --jq '.[] | select(.state=="success") | .environment_url' | head -1
+            gh api --method GET "repos/capire/xflights-java/deployments?environment=$ENVIRONMENT&per_page=1" --jq '.[0].id' \
+              | xargs -I% gh api "repos/capire/xflights-java/deployments/%/statuses" --jq '.[] | select(.state=="success") | .environment_url' \
+              | head -1
           )
           echo "Connecting to xflights at $xflights"
           sed -i "s|XFLIGHTS_URL:.*|XFLIGHTS_URL: $xflights|" mta.yaml
