@@ -35,12 +35,14 @@ cds:
     xflights:
       type: hcql
       model: sap.capire.flights.data
+      http:
+        suffix: /hcql
       binding:
         name: xtravels-ias
         onBehalfOf: systemUser
         options:
-          url: ${XFLIGHTS_URL}/hcql # from mta.yaml
-          ias-dependency-name: DataConsumer
+          url: ${XFLIGHTS_URL} # from mta.yaml
+          ias-dependency-name: data-consumer
 ---
 spring:
   config.activate.on-profile: hybrid
