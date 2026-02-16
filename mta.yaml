@@ -19,7 +19,7 @@ modules:
       JBP_CONFIG_COMPONENTS: "jres: ['com.sap.xs.java.buildpack.jre.SAPMachineJRE']"
       JBP_CONFIG_SAP_MACHINE_JRE: '{ version: 21.+ }'
       AMS_DCL_ROOT: ams/dcl
-      XFLIGHTS_URL: https://cap-sandbox-capire-xflights-srv.cert.cfapps.eu12.hana.ondemand.com # TODO derive from GitHub environment
+      XFLIGHTS_URL: <filled by GitHub action>
     build-parameters:
       builder: custom
       commands:
