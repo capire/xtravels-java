@@ -22,11 +22,11 @@
     <cds.services.version>4.8.0</cds.services.version>
     <spring.boot.version>3.5.11</spring.boot.version>
     <sap.cloud.sdk.version>5.27.0</sap.cloud.sdk.version>
+    <sap.cloud.security.version>3.6.8</sap.cloud.security.version>
+    <sap.cloud.security.ams.version>3.8.0</sap.cloud.security.ams.version>
 
     <cds.install-node.downloadUrl>https://nodejs.org/dist/</cds.install-node.downloadUrl>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <sap.cloud.security.ams.version>3.8.0</sap.cloud.security.ams.version>
-    <sap.cloud.security.version>3.6.8</sap.cloud.security.version>
   </properties>
 
   <dependencyManagement>
@@ -66,7 +66,6 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-
     </dependencies>
   </dependencyManagement>
 
