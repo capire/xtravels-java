@@ -26,6 +26,7 @@
     <cds.install-node.downloadUrl>https://nodejs.org/dist/</cds.install-node.downloadUrl>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <sap.cloud.security.ams.version>3.8.0</sap.cloud.security.ams.version>
+    <sap.cloud.security.version>3.6.8</sap.cloud.security.version>
   </properties>
 
   <dependencyManagement>
@@ -53,6 +54,15 @@
         <groupId>com.sap.cloud.sdk</groupId>
         <artifactId>sdk-modules-bom</artifactId>
         <version>${sap.cloud.sdk.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <!-- SAP SECURITY -->
+      <dependency>
+        <groupId>com.sap.cloud.security</groupId>
+        <artifactId>java-bom</artifactId>
+        <version>${sap.cloud.security.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
