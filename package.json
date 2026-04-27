@@ -13,5 +13,10 @@
     "@sap/cds": "^9",
     "@sap/ams": "^3"
   },
+  "cds": {
+    "fiori": {
+      "direct_crud": "true"
+    }
+  },
   "license": "Apache-2.0"
 }

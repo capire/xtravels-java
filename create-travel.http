@@ -1,0 +1,25 @@
+### Create a new Travel (Admin User)
+POST http://localhost:8080/odata/v4/travel/Travels
+Content-Type: application/json
+Authorization: Basic YWRtaW46
+
+{
+  "Description": "Business Trip to Berlin",
+  "BeginDate": "2026-04-15",
+  "EndDate": "2026-04-18",
+  "BookingFee": 50,
+  "Currency_code": "EUR",
+  "Agency_ID": "070001",
+  "Customer_ID": "000001"
+}
+
+
+### Create a new Travel Draft using draftNew action (Admin User)
+POST http://localhost:8080/odata/v4/travel/Travels/TravelService.draftNew
+Content-Type: application/json
+Authorization: Basic YWRtaW46
+
+{
+  "ID" : 666
+}
+
