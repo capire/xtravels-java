@@ -38,7 +38,7 @@ jobs:
       - uses: actions/setup-java@v5
         with:
           distribution: sapmachine
-          java-version: 21
+          java-version: 25
           cache: maven
       - uses: cap-js/cf-setup@v2
         with:
