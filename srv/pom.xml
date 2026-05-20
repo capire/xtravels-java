@@ -46,14 +46,14 @@
     </dependency>
 
     <dependency>
-      <groupId>com.sap.cloud.security.ams.client</groupId>
-      <artifactId>jakarta-ams</artifactId>
+      <groupId>com.sap.cloud.security.ams</groupId>
+      <artifactId>spring-boot-starter-cap-ams</artifactId>
       <version>${sap.cloud.security.ams.version}</version>
     </dependency>
 
     <dependency>
-      <groupId>com.sap.cloud.security.ams.client</groupId>
-      <artifactId>cap-ams-support</artifactId>
+      <groupId>com.sap.cloud.security.ams</groupId>
+      <artifactId>spring-boot-starter-cap-ams-test</artifactId>
       <version>${sap.cloud.security.ams.version}</version>
     </dependency>
 
@@ -82,6 +82,12 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-webmvc-test</artifactId>
       <scope>test</scope>
     </dependency>
 
@@ -183,9 +189,9 @@
       </plugin>
 
       <plugin>
-        <groupId>com.sap.cloud.security.ams.client</groupId>
+        <groupId>com.sap.cloud.security.ams.dcl</groupId>
         <artifactId>dcl-compiler-plugin</artifactId>
-        <version>${sap.cloud.security.ams.version}</version>
+        <version>1.3.0</version>
         <executions>
           <execution>
             <id>dcl.compile</id>
