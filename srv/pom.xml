@@ -188,21 +188,18 @@
         </executions>
       </plugin>
 
+      <!-- Plugin for DCL -> DCN compilation before tests -->
       <plugin>
         <groupId>com.sap.cloud.security.ams.dcl</groupId>
         <artifactId>dcl-compiler-plugin</artifactId>
         <version>1.3.0</version>
         <executions>
           <execution>
-            <id>dcl.compile</id>
             <goals>
               <goal>compile</goal>
             </goals>
             <configuration>
               <sourceDirectory>${project.basedir}/src/main/resources/ams</sourceDirectory>
-              <dcn>true</dcn>
-              <dcnParameter>pretty</dcnParameter>
-              <compileTestToDcn>true</compileTestToDcn>
             </configuration>
           </execution>
         </executions>
