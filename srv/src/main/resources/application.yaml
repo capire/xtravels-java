@@ -47,6 +47,7 @@ cds:
 spring:
   config.activate.on-profile: hybrid
 cds:
+  hcql.v2.enabled: true
   remote.services:
     xflights:
       type: hcql
@@ -56,6 +57,23 @@ cds:
       destination:
         properties:
           url: http://localhost:8081
+          User: internal
+          Password:
+---
+spring:
+  config.activate.on-profile: hybrid-node-js
+cds:
+  hcql.v2.enabled: true
+  remote.services:
+    xflights:
+      type: hcql
+      model: sap.capire.flights.data
+      http:
+        suffix: /hcql
+        service: data
+      destination:
+        properties:
+          url: http://localhost:4005/
           User: internal
           Password:
 ---
