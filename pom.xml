@@ -20,8 +20,8 @@
     <!-- DEPENDENCIES VERSION -->
     <jdk.version>25</jdk.version>
     <cds.services.version>4.9.0</cds.services.version>
-    <spring.boot.version>3.5.14</spring.boot.version>
-    <sap.cloud.sdk.version>5.30.0</sap.cloud.sdk.version>
+    <spring.boot.version>3.5.15</spring.boot.version>
+    <sap.cloud.sdk.version>5.31.0</sap.cloud.sdk.version>
     <sap.cloud.security.version>3.7.3</sap.cloud.security.version>
     <sap.cloud.security.ams.version>3.8.1</sap.cloud.security.ams.version>
 
