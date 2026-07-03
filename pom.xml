@@ -24,7 +24,6 @@
     <sap.cloud.sdk.version>5.31.0</sap.cloud.sdk.version>
     <sap.cloud.security.version>4.0.8</sap.cloud.security.version>
     <sap.cloud.security.ams.version>4.1.2</sap.cloud.security.ams.version>
-
     <cds.install-node.downloadUrl>https://nodejs.org/dist/</cds.install-node.downloadUrl>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -119,7 +118,7 @@
       <!-- SUREFIRE VERSION -->
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.5.5</version>
+        <version>3.5.6</version>
       </plugin>
 
       <!-- POM FLATTENING FOR CI FRIENDLY VERSIONS -->
@@ -179,7 +178,7 @@
       <plugin>
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
-        <version>3.5.1</version>
+        <version>3.6.0</version>
         <configuration>
           <java>
             <googleJavaFormat>
