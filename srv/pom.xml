@@ -52,13 +52,6 @@
     </dependency>
 
     <dependency>
-      <groupId>com.sap.cloud.security.ams</groupId>
-      <artifactId>spring-boot-starter-cap-ams-test</artifactId>
-      <version>${sap.cloud.security.ams.version}</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
       <scope>runtime</scope>
@@ -95,6 +88,13 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-security-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.sap.cloud.security.ams</groupId>
+      <artifactId>spring-boot-starter-cap-ams-test</artifactId>
+      <version>${sap.cloud.security.ams.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
