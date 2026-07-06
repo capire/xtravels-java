@@ -9,14 +9,9 @@
     "@capire/common": "*"
   },
   "devDependencies": {
-    "@sap/cds-dk": "^9",
-    "@sap/cds": "^9",
+    "@sap/cds-dk": "^10",
+    "@sap/cds": "^10",
     "@sap/ams": "^3"
-  },
-  "cds": {
-    "fiori": {
-      "direct_crud": "true"
-    }
   },
   "license": "Apache-2.0"
 }

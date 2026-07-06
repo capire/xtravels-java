@@ -1,4 +1,7 @@
 {
+  "fiori": {
+    "draft_new_action": true
+  },
   "[flow]": {
     "folders": {
       "flow": "xmpls/flow/"
