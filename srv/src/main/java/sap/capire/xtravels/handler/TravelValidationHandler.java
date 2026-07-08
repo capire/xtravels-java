@@ -26,9 +26,8 @@ import com.sap.cds.services.handler.annotations.ServiceName;
 import com.sap.cds.services.messages.MessageTarget;
 import java.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-@Component
+// @Component
 @ServiceName(TravelService_.CDS_NAME)
 public class TravelValidationHandler implements EventHandler {
 
