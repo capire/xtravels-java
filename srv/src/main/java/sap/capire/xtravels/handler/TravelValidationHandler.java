@@ -1,6 +1,5 @@
 package sap.capire.xtravels.handler;
 
-import static cds.gen.travelservice.TravelService_.BOOKINGS;
 import static cds.gen.travelservice.TravelService_.TRAVELS;
 import static com.sap.cds.services.cds.CqnService.EVENT_CREATE;
 import static com.sap.cds.services.cds.CqnService.EVENT_UPDATE;
@@ -24,10 +23,13 @@ import com.sap.cds.services.handler.annotations.Before;
 import com.sap.cds.services.handler.annotations.HandlerOrder;
 import com.sap.cds.services.handler.annotations.ServiceName;
 import com.sap.cds.services.messages.MessageTarget;
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.function.Function;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-// @Component
+@Component
 @ServiceName(TravelService_.CDS_NAME)
 public class TravelValidationHandler implements EventHandler {
 
@@ -41,14 +43,18 @@ public class TravelValidationHandler implements EventHandler {
       ctx.getMessages().error("Description too short").target(TRAVELS, b -> b.Description());
     }
 
+    if (travel.getBookingFee() != null && travel.getBookingFee().compareTo(BigDecimal.ZERO) < 0) {
+      ctx.getMessages()
+          .error("ASSERT_BOOKING_FEE_NON_NEGATIVE")
+          .target(TRAVELS, b -> b.BookingFee());
+    }
+
     if (travel.getCustomerId() == null) {
       if (travel.containsKey(Travels_.CUSTOMER_ID)) {
         ctx.getMessages()
             .error("409003")
             .target(TRAVELS, b -> b.Customer_ID())
             .additionalTargets(MessageTarget.create(TRAVELS, b -> b.Customer().ID()));
-        ;
-        ;
       }
     } else {
       var result =
@@ -58,7 +64,6 @@ public class TravelValidationHandler implements EventHandler {
             .error("Customer does not exist")
             .target(TRAVELS, b -> b.Customer())
             .additionalTargets(MessageTarget.create(TRAVELS, b -> b.Customer_ID()));
-        ;
       }
     }
 
@@ -145,7 +150,9 @@ public class TravelValidationHandler implements EventHandler {
       Travels travel = bookings.getTravel();
       if (travel == null) {
         var result =
-            ts.run(Select.from(ref.Travel()).columns(t -> t.BeginDate(), t -> t.EndDate()));
+            ts.run(
+                Select.from(ref.Travel())
+                    .columns(t -> t.BeginDate(), t -> t.EndDate(), t -> t.Currency_code()));
         travel = result.single();
       }
 
@@ -155,14 +162,28 @@ public class TravelValidationHandler implements EventHandler {
 
       if (beginDate != null && endDate != null) {
         if (flightDate.isBefore(beginDate) || flightDate.isAfter(endDate)) {
-          MessageTarget target =
-              travel != null
-                  ? MessageTarget.create(TRAVELS, t -> t.Bookings().Flight_date())
-                  : MessageTarget.create(BOOKINGS, t -> t.Flight_date());
+          MessageTarget target = bookingTarget(b -> b.Flight_date());
           ctx.getMessages().error("ASSERT_BOOKINGS_IN_TRAVEL_PERIOD").target(target);
         }
       }
+
+      if (bookings.getFlightPrice() != null
+          && bookings.getFlightPrice().compareTo(BigDecimal.ZERO) < 0) {
+        MessageTarget target = bookingTarget(b -> b.FlightPrice());
+        ctx.getMessages().error("ASSERT_FLIGHT_PRICE_POSITIVE").target(target);
+      }
+
+      if (bookings.getCurrencyCode() != null && travel.getCurrencyCode() != null) {
+        if (!bookings.getCurrencyCode().equals(travel.getCurrencyCode())) {
+          MessageTarget target = bookingTarget(b -> b.Currency_code());
+          ctx.getMessages().error("ASSERT_BOOKING_CURRENCY_MATCHES_TRAVEL").target(target);
+        }
+      }
     }
+  }
+
+  private static MessageTarget bookingTarget(Function<Bookings_, Object> path) {
+    return MessageTarget.create(TRAVELS, t -> path.apply(t.Bookings()));
   }
 
   private static Bookings_ bookingRef(Bookings_ ref, Bookings booking) {
