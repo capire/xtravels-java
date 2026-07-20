@@ -23,7 +23,7 @@
     <spring.boot.version>4.1.0</spring.boot.version>
     <sap.cloud.sdk.version>5.32.0</sap.cloud.sdk.version>
     <sap.cloud.security.version>4.0.8</sap.cloud.security.version>
-    <sap.cloud.security.ams.version>4.3.0</sap.cloud.security.ams.version>
+    <sap.cloud.security.ams.version>4.4.0</sap.cloud.security.ams.version>
     <cds.install-node.downloadUrl>https://nodejs.org/dist/</cds.install-node.downloadUrl>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
