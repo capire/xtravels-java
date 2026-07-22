@@ -16,8 +16,9 @@ import com.sap.cds.ql.Value;
 import com.sap.cds.ql.cqn.CqnSelectListValue;
 import com.sap.cds.ql.cqn.CqnStructuredTypeRef;
 import com.sap.cds.ql.cqn.CqnValue;
-import com.sap.cds.services.draft.DraftCancelEventContext;
-import com.sap.cds.services.draft.DraftPatchEventContext;
+import com.sap.cds.services.EventContext;
+import com.sap.cds.services.cds.CqnService;
+import com.sap.cds.services.draft.DraftService;
 import com.sap.cds.services.handler.EventHandler;
 import com.sap.cds.services.handler.annotations.After;
 import com.sap.cds.services.handler.annotations.ServiceName;
@@ -39,16 +40,25 @@ class RecalculatePriceHandler implements EventHandler {
     this.service = service;
   }
 
-  @After(entity = {Travels_.CDS_NAME, Bookings_.CDS_NAME, Bookings_.Supplements_.CDS_NAME})
-  void updateTotalsOnPatch(CqnStructuredTypeRef ref, CdsData data, DraftPatchEventContext context) {
+  @After(
+      entity = {Travels_.CDS_NAME, Bookings_.CDS_NAME, Bookings_.Supplements_.CDS_NAME},
+      event = {CqnService.EVENT_CREATE, CqnService.EVENT_UPDATE, DraftService.EVENT_DRAFT_PATCH})
+  void updateTotalsOnPatch(CqnStructuredTypeRef ref, CdsData data, EventContext context) {
     if (!(data.containsKey(Travels.BOOKING_FEE)
         || data.containsKey(Bookings.FLIGHT_PRICE)
         || data.containsKey(Bookings.Supplements.PRICE))) return;
+
+    if (context.getEvent().equals(CqnService.EVENT_CREATE)
+        && context.getTarget().getQualifiedName().equals(Travels_.CDS_NAME)) {
+      ref = Travels.of(data).ref().asRef();
+    }
     updateTotals(ref);
   }
 
-  @After(entity = {Bookings_.CDS_NAME, Bookings_.Supplements_.CDS_NAME})
-  void updateTotalsOnDelete(CqnStructuredTypeRef ref, DraftCancelEventContext context) {
+  @After(
+      entity = {Bookings_.CDS_NAME, Bookings_.Supplements_.CDS_NAME},
+      event = {CqnService.EVENT_DELETE, DraftService.EVENT_DRAFT_CANCEL})
+  void updateTotalsOnDelete(CqnStructuredTypeRef ref) {
     updateTotals(ref);
   }
 
