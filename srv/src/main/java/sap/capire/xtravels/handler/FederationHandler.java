@@ -12,7 +12,6 @@ import static com.sap.cds.services.draft.DraftService.EVENT_DRAFT_PATCH;
 import cds.gen.sap.capire.flights.data.Data;
 import cds.gen.sap.capire.xflights.Flights;
 import cds.gen.sap.capire.xflights.Supplements;
-import com.google.common.collect.Maps;
 import com.sap.cds.CdsData;
 import com.sap.cds.Result;
 import com.sap.cds.impl.DataProcessor;
@@ -36,18 +35,22 @@ import com.sap.cds.services.handler.annotations.On;
 import com.sap.cds.services.handler.annotations.ServiceName;
 import com.sap.cds.services.persistence.PersistenceService;
 import com.sap.cds.services.runtime.CdsRuntime;
+import com.sap.cds.util.CdsModelUtils;
 import com.sap.cloud.sdk.cloudplatform.resilience.ResilienceConfiguration;
 import com.sap.cloud.sdk.cloudplatform.resilience.ResilienceConfiguration.TimeLimiterConfiguration;
 import com.sap.cloud.sdk.cloudplatform.resilience.ResilienceDecorator;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -62,15 +65,19 @@ class FederationHandler implements EventHandler {
   private final PersistenceService db;
   private final Data dataService;
   private final CdsRuntime runtime;
+  private final Environment env;
 
-  FederationHandler(PersistenceService db, Data dataService, CdsRuntime runtime) {
+  FederationHandler(PersistenceService db, Data dataService, CdsRuntime runtime, Environment env) {
     this.db = db;
     this.dataService = dataService;
     this.runtime = runtime;
+    this.env = env;
   }
 
   @On(serviceType = ApplicationLifecycleService.class)
   void initialLoad(ApplicationPreparedEventContext context) {
+    if (env.getProperty("skip-initial-load", Boolean.class, false)) return;
+
     // initial load for Flights
     logger.info("Performing initial load for Flights");
     var bookingFlights =
@@ -127,10 +134,18 @@ class FederationHandler implements EventHandler {
           CdsAssociationType assoc = element.getType().as(CdsAssociationType.class);
           CdsEntity target = assoc.getTarget();
           if (isFederated(target)) {
-            List<String> fks = assoc.refs().map(r -> r.path()).toList();
-            Map<String, Object> fkValues = Maps.filterKeys(data, fks::contains);
-            if (fks.size() == target.keyElements().count() && !isReplicated(target, fkValues)) {
-              replicateInstance(target, fkValues);
+            Map<String, Object> keyValues = new HashMap<>();
+            if (data.get(element.getName()) instanceof Map<?, ?> assocData) { //
+              Set<String> keys = CdsModelUtils.keyNames(target);
+              keys.forEach(k -> keyValues.put(k, assocData.get(k)));
+            } else {
+              assoc
+                  .refs()
+                  .forEach(
+                      r -> keyValues.put(r.path(), data.get(element.getName() + "_" + r.path())));
+            }
+            if (!keyValues.containsValue(null) && !isReplicated(target, keyValues)) {
+              replicateInstance(target, keyValues);
             }
           }
         };

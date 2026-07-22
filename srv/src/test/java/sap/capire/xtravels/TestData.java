@@ -1,6 +1,7 @@
 package sap.capire.xtravels;
 
 import cds.gen.travelservice.Bookings;
+import cds.gen.travelservice.Supplements;
 import cds.gen.travelservice.Travels;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -32,7 +33,7 @@ public class TestData {
 
   public static Bookings.Supplements createSupplementData() {
     Bookings.Supplements supplement = Bookings.Supplements.create();
-    supplement.setBookedId("bv-0001");
+    supplement.setBooked(Supplements.create("bv-0001"));
     supplement.setPrice(new BigDecimal("2.30"));
     supplement.setCurrencyCode("EUR");
     return supplement;

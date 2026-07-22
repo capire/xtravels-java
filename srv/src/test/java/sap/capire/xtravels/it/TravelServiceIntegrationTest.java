@@ -29,7 +29,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 /** Integration tests for the CAP Travel Service OData endpoints */
-@SpringBootTest
+@SpringBootTest(properties = "skip-initial-load=true")
 @AutoConfigureMockMvc
 class TravelServiceIntegrationTest {
 
@@ -147,6 +147,7 @@ class TravelServiceIntegrationTest {
                     + ",IsActiveEntity=true)?$expand=Bookings($expand=Flight,Supplements($expand=booked))"))
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith("application/json"))
+        .andExpect(jsonPath("$.TotalPrice").value(1205))
         .andExpect(jsonPath("$.Bookings[0].Flight.origin").value("Miami International Airport"))
         .andExpect(jsonPath("$.Bookings[0].Supplements[0].booked.descr").value("Hot Chocolate"));
   }
