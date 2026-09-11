@@ -78,6 +78,14 @@ cds:
           Password:
 ---
 spring:
+  config.activate.on-profile: ollama
+cds:
+  ai.chat.models:
+    llm:
+      kind: ollama
+      model: gemma4:26b
+---
+spring:
   config.activate.on-profile: default
   sql.init.platform: h2
 cds:
