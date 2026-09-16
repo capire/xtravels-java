@@ -1,0 +1,86 @@
+GET http://localhost:8080/a2a/travel/.well-known/agent-card.json
+
+### Flights are public
+
+POST http://localhost:8080/a2a/travel
+Content-Type: application/json
+A2A-Version: 1.0
+
+{
+    "jsonrpc": "2.0",
+    "id": "e92b3b43-9414-49c2-ac8d-5be4d1d4cb92",
+    "method": "SendMessage",
+    "params": {
+        "message": {
+            "role": "ROLE_USER",
+            "parts": [
+                {
+                    "text": "Show me flights from Frankfurt to any location at any time"
+                }
+            ],
+            "messageId": "c4af85a6-4462-429c-971c-e56185134bfd"
+        }
+    }
+}
+
+### Travels are restricted to authenticated users
+
+POST http://localhost:8080/a2a/travel
+Content-Type: application/json
+Authorization: Basic authenticated:
+A2A-Version: 1.0
+
+{
+    "jsonrpc": "2.0",
+    "id": "e92b3b43-9414-49c2-ac8d-5be4d1d4cb92",
+    "method": "SendMessage",
+    "params": {
+        "message": {
+            "role": "ROLE_USER",
+            "parts": [
+                {
+                    "text": "List me a few available travels"
+                }
+            ],
+            "messageId": "c4af85a6-4462-429c-971c-e56185134bfd"
+        }
+    }
+}
+
+### Travel Edits are restricted to admin users
+
+POST http://localhost:8080/a2a/travel
+Content-Type: application/json
+Authorization: Basic admin:
+A2A-Version: 1.0
+
+{
+    "jsonrpc": "2.0",
+    "id": "e92b3b43-9414-49c2-ac8d-5be4d1d4cb92",
+    "method": "SendMessage",
+    "params": {
+        "message": {
+            "role": "ROLE_USER",
+            "parts": [
+                {
+                    "text": "Update the description of travel with ID 4132 to 'Vacation to San Francisco' and list me other information about that travel"
+                }
+            ],
+            "messageId": "c4af85a6-4462-429c-971c-e56185134bfd"
+        }
+    }
+}
+
+### List Tasks
+
+POST http://localhost:8080/a2a/travel
+Content-Type: application/json
+Authorization: Basic admin:
+A2A-Version: 1.0
+
+{
+    "jsonrpc": "2.0",
+    "id": "e92b3b43-9414-49c2-ac8d-5be4d1d4cb92",
+    "method": "ListTasks",
+    "params": {}
+}

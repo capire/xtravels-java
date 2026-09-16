@@ -24,6 +24,7 @@
     <sap.cloud.sdk.version>5.34.0</sap.cloud.sdk.version>
     <sap.cloud.security.version>4.0.8</sap.cloud.security.version>
     <sap.cloud.security.ams.version>4.5.1</sap.cloud.security.ams.version>
+    <langchain4j.version>1.19.0</langchain4j.version>
     <cds.install-node.downloadUrl>https://nodejs.org/dist/</cds.install-node.downloadUrl>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -62,6 +63,15 @@
         <groupId>com.sap.cloud.security</groupId>
         <artifactId>java-bom</artifactId>
         <version>${sap.cloud.security.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <!-- LangChain4j -->
+      <dependency>
+        <groupId>dev.langchain4j</groupId>
+        <artifactId>langchain4j-bom</artifactId>
+        <version>${langchain4j.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
