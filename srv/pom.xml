@@ -203,7 +203,7 @@
       <plugin>
         <groupId>com.sap.cloud.security.ams.dcl</groupId>
         <artifactId>dcl-compiler-plugin</artifactId>
-        <version>1.6.0</version>
+        <version>1.8.0</version>
         <executions>
           <execution>
             <goals>
