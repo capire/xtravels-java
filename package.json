@@ -13,5 +13,12 @@
     "@sap/cds": "^10",
     "@sap/ams": "^3"
   },
+  "cds": {
+    "requires": {
+      "agent-memory": {
+        "model": "com.sap.cds/agent-memory"
+      }
+    }
+  },
   "license": "Apache-2.0"
 }

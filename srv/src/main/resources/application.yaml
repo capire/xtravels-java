@@ -1,4 +1,8 @@
 ---
+logging.level:
+  com.sap.cds.ai: DEBUG
+  com.sap.cds.persistence.sql: DEBUG
+  com.sap.cds.feature.agentmemory: DEBUG
 management:
   endpoint:
     health:
@@ -14,10 +18,16 @@ management:
     db.enabled: true
 cds:
   drafts.enforce-readonly: true
+  security.logPotentiallySensitive: true
   security.mock.users:
     admin:
       roles:
       - admin
+  ai.memory:
+    store: persistent
+    maxMessages: 100
+    ttl: 2h
+    allowAnonymous: true
   data-source.csv.paths:
   - "db/data/**"
   - "../db/data/**"
@@ -46,7 +56,12 @@ cds:
 ---
 spring:
   config.activate.on-profile: hybrid
+  sql.init.mode: never
+skip-initial-load: true
 cds:
+  data-source.auto-config.enabled: true
+  datasource:
+    csv.initialization-mode: never
   hcql.v2.enabled: true
   remote.services:
     xflights:
@@ -79,11 +94,24 @@ cds:
 ---
 spring:
   config.activate.on-profile: ollama
+  sql.init.platform: h2
 cds:
+  datasource:
+    csv.initialization-mode: always
   ai.chat.models:
     llm:
       kind: ollama
-      model: gemma4:26b
+      model: gemma4:26b-mlx
+    fast:
+      kind: ollama
+      model: gemma4:26b-mlx
+      options:
+        temperature: 0
+    reasoning:
+      kind: ollama
+      model: gemma4:26b-mlx
+      options:
+        temperature: 0.2
 ---
 spring:
   config.activate.on-profile: default

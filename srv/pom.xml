@@ -41,6 +41,18 @@
 
     <dependency>
       <groupId>com.sap.cds</groupId>
+      <artifactId>cds-feature-agent-memory</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.ai</groupId>
+      <artifactId>spring-ai-starter-model-ollama</artifactId>
+      <version>2.1.0-M1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.sap.cds</groupId>
       <artifactId>cds-feature-flow</artifactId>
       <scope>runtime</scope>
     </dependency>
