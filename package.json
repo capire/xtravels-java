@@ -16,7 +16,7 @@
   "cds": {
     "requires": {
       "agent-memory": {
-        "model": "com.sap.cds/agent-memory"
+        "model": "com.sap.cds.ai/memory"
       }
     }
   },
