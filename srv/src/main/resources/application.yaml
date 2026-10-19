@@ -23,11 +23,6 @@ cds:
     admin:
       roles:
       - admin
-  ai.memory:
-    store: persistent
-    maxMessages: 100
-    ttl: 2h
-    allowAnonymous: true
   data-source.csv.paths:
   - "db/data/**"
   - "../db/data/**"
