@@ -1,7 +1,6 @@
 ---
 logging.level:
   com.sap.cds.ai: DEBUG
-  com.sap.cds.persistence.sql: DEBUG
   com.sap.cds.feature.agentmemory: DEBUG
 management:
   endpoint:
