@@ -97,16 +97,6 @@ cds:
     llm:
       kind: ollama
       model: gemma4:26b-mlx
-    fast:
-      kind: ollama
-      model: gemma4:26b-mlx
-      options:
-        temperature: 0
-    reasoning:
-      kind: ollama
-      model: gemma4:26b-mlx
-      options:
-        temperature: 0.2
 ---
 spring:
   config.activate.on-profile: default
