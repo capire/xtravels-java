@@ -1,7 +1,7 @@
 ---
 logging.level:
   com.sap.cds.ai: DEBUG
-  com.sap.cds.feature.agentmemory: DEBUG
+  com.sap.cds.services.ai.memory: DEBUG
 management:
   endpoint:
     health:
