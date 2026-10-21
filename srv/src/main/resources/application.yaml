@@ -1,4 +1,7 @@
 ---
+logging.level:
+  com.sap.cds.ai: DEBUG
+  com.sap.cds.services.ai.memory: DEBUG
 management:
   endpoint:
     health:
@@ -14,6 +17,7 @@ management:
     db.enabled: true
 cds:
   drafts.enforce-readonly: true
+  security.logPotentiallySensitive: true
   security.mock.users:
     admin:
       roles:
@@ -83,7 +87,7 @@ cds:
   ai.chat.models:
     llm:
       kind: ollama
-      model: gemma4:26b
+      model: gemma4:26b-mlx
 ---
 spring:
   config.activate.on-profile: default
