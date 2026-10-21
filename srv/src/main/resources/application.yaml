@@ -50,12 +50,7 @@ cds:
 ---
 spring:
   config.activate.on-profile: hybrid
-  sql.init.mode: never
-skip-initial-load: true
 cds:
-  data-source.auto-config.enabled: true
-  datasource:
-    csv.initialization-mode: never
   hcql.v2.enabled: true
   remote.services:
     xflights:
@@ -88,10 +83,7 @@ cds:
 ---
 spring:
   config.activate.on-profile: ollama
-  sql.init.platform: h2
 cds:
-  datasource:
-    csv.initialization-mode: always
   ai.chat.models:
     llm:
       kind: ollama
