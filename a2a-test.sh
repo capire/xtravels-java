@@ -1,7 +1,20 @@
 #!/usr/bin/env bash
-# A2A protocol conformance test script for the xtravels agent.
-# Usage: ./a2a-test.sh [BASE_URL] [USER] [PASS]
+# A2A protocol conformance script for the xtravels sample app (~/src/samples/xtravels-java).
+# Drives the live server over real HTTP — complements the MockMvc tests in cds-services by
+# exercising the full stack including SQLite task persistence (cds.agent.tasks.enabled=true).
 #
+# Coverage (10 core + 6 paging tests):
+#   agent card · message/send · tasks/get persistence · context continuity across turns ·
+#   message/stream SSE · tasks/cancel · unknown task (-32001) · invalid JSON (-32700) ·
+#   unknown method (-32601) · ListTasks pagination (pageSize, nextPageToken, walk-all-pages,
+#   contextId filter, last-page sentinel) · totalSize consistency across pages
+#
+# Key findings documented here (not in the MockMvc suite):
+#   - ListTasks method name is "ListTasks" (PascalCase), not "listTasks"
+#   - nextPageToken is returned as "" on the last page, not null/absent
+#   - Requires A2A-Version: 1.0 header to route to the v1 handler with ListTasks support
+#
+# Usage: ./a2a-test.sh [BASE_URL] [USER] [PASS]
 # Defaults to http://localhost:8080, admin, empty password.
 # Requires: curl, python3
 set -euo pipefail
