@@ -94,3 +94,22 @@ spring:
   sql.init.platform: h2
 cds:
   data-source.auto-config.enabled: false
+---
+spring:
+  config.activate.on-profile: sqlite
+  datasource:
+    url: "jdbc:sqlite:/tmp/xtravels.db"
+    driver-class-name: org.sqlite.JDBC
+    hikari:
+      maximum-pool-size: 1
+      max-lifetime: 0
+  sql:
+    init:
+      platform: sqlite
+      mode: always
+cds:
+  data-source:
+    auto-config.enabled: false
+  agent:
+    tasks:
+      enabled: true

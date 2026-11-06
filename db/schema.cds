@@ -1,5 +1,6 @@
 namespace sap.capire.travels;
 
+using from 'com.sap.cds/ai/agent-tasks';
 using from 'com.sap.cds/ai/agent-memory';
 using { sap, managed, Country, Currency } from '@sap/cds/common';
 using {
