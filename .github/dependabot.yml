@@ -23,10 +23,6 @@ updates:
       all-npm-dependencies:
         patterns:
         - "*"
-    ignore:
-      - dependency-name: "express"
-        # For Express, ignore all updates for version 5 becaue @sap/cds requires express version 4
-        versions: ["5.x"]
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
